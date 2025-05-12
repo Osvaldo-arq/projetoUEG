@@ -29,4 +29,13 @@ public interface UserRepository extends JpaRepository<User, Long> {
      * @return Um {@link Optional} contendo o usuário encontrado (se existir) ou um {@link Optional} vazio caso contrário.
      */
     Optional<User> findByEmail(String email);
+
+    /**
+     * Verifica se um usuário existe com o nome de usuário fornecido.
+     * Este método é útil para validar se um nome de usuário já está em uso antes de criar um novo usuário.
+     *
+     * @param username O nome de usuário a ser verificado.
+     * @return true se o nome de usuário já existir, false caso contrário.
+     */
+    boolean existsByUsername(String username);
 }

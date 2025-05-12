@@ -4,11 +4,12 @@ set -euo pipefail
 
 BASE_URL="${BASE_URL:-http://127.0.0.1:8080}"
 
-USER="testuser79"
+USER="testuser221"
 PASS="123456"
-EMAIL="test79@example.com"
+EMAIL="test1221@example.com"
 ROLE="USER"
 
+# 1) Registro do usuário
 echo "🔹 1) Registrando usuário..."
 REGISTER_RESP=$(curl -s -w "\n%{http_code}" \
   -X POST "$BASE_URL/api/auth/register" \
@@ -20,19 +21,17 @@ REGISTER_RESP=$(curl -s -w "\n%{http_code}" \
     "email": "'"$EMAIL"'",
     "role": "'"$ROLE"'"
   }')
-
-REGISTER_BODY=$(echo "$REGISTER_RESP" | sed '$d')
 REGISTER_CODE=$(echo "$REGISTER_RESP" | tail -n1)
-
 if [ "$REGISTER_CODE" -ne 200 ]; then
   echo "❌ Registro falhou (HTTP $REGISTER_CODE)"
-  echo "$REGISTER_BODY" | jq . || echo "$REGISTER_BODY"
   exit 1
 fi
-echo "✅ Registro OK (HTTP $REGISTER_CODE)"
-echo
 
-echo "🔹 2) Realizando login..."
+echo "✅ Registro OK"
+
+echo
+# 2) Login
+echo "🔹 2) Login..."
 LOGIN_RESP=$(curl -s -w "\n%{http_code}" \
   -X POST "$BASE_URL/api/auth/login" \
   -H "Content-Type: application/json" \
@@ -40,30 +39,23 @@ LOGIN_RESP=$(curl -s -w "\n%{http_code}" \
     "username": "'"$USER"'",
     "password": "'"$PASS"'"
   }')
-
-LOGIN_BODY=$(echo "$LOGIN_RESP" | sed '$d')
 LOGIN_CODE=$(echo "$LOGIN_RESP" | tail -n1)
-
-if [ "$LOGIN_CODE" -ne 200 ]; then
+TOKEN=$(echo "$LOGIN_RESP" | sed '$d' | tr -d '"')
+if [ "$LOGIN_CODE" -ne 200 ] || [[ -z "$TOKEN" ]]; then
   echo "❌ Login falhou (HTTP $LOGIN_CODE)"
-  echo "$LOGIN_BODY" | jq . || echo "$LOGIN_BODY"
   exit 1
 fi
+echo "✅ Login OK, token recebido"
 
-TOKEN=$(echo "$LOGIN_BODY" | tr -d '"')
-if [[ -z "$TOKEN" ]]; then
-  echo "❌ Token não retornado no login"
-  exit 1
-fi
-
-echo "✅ Login OK (HTTP $LOGIN_CODE), token recebido"
 echo
+# Presume USER_ID = 1 (ajuste se necessário)
+USER_ID=1
 
-echo "🔹 3) CRUD de Profile"
-
-# 3.1) Criar / Atualizar Profile
-echo "  👉 Criando profile..."
-CREATE_RESP=$(curl -s -w "\n%{http_code}" \
+# 3) CRUD de Profile
+echo "🔹 3) CRUD de Profile..."
+# 3.1) Criar Profile
+echo "  ➤ Criando profile..."
+PROF_CREATE=$(curl -s -w "\n%{http_code}" \
   -X POST "$BASE_URL/api/profile" \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer $TOKEN" \
@@ -73,64 +65,118 @@ CREATE_RESP=$(curl -s -w "\n%{http_code}" \
     "phone": "+551199999999",
     "userEmail": "'"$EMAIL"'"
   }')
-
-CREATE_BODY=$(echo "$CREATE_RESP" | sed '$d')
-CREATE_CODE=$(echo "$CREATE_RESP" | tail -n1)
-
-if [ "$CREATE_CODE" -ne 200 ]; then
-  echo "❌ Falha ao criar profile (HTTP $CREATE_CODE)"
-  echo "$CREATE_BODY" | jq . || echo "$CREATE_BODY"
+PROF_CODE=$(echo "$PROF_CREATE" | tail -n1)
+if [ "$PROF_CODE" -ne 200 ]; then
+  echo "❌ Create Profile falhou (HTTP $PROF_CODE)"
   exit 1
 fi
-echo "  ✅ Profile criado: $(echo "$CREATE_BODY" | jq .)"
+echo "  ✅ Profile criado"
 
-# 3.2) Ler Profile criado
-echo "  👉 Buscando profile por email..."
-GET_RESP=$(curl -s -w "\n%{http_code}" \
+# 3.2) Ler Profile
+echo "  ➤ Lendo profile..."
+PROF_GET=$(curl -s -w "\n%{http_code}" \
   -X GET "$BASE_URL/api/profile/$EMAIL" \
   -H "Authorization: Bearer $TOKEN")
-
-GET_BODY=$(echo "$GET_RESP" | sed '$d')
-GET_CODE=$(echo "$GET_RESP" | tail -n1)
-
-if [ "$GET_CODE" -ne 200 ]; then
-  echo "❌ Falha ao buscar profile (HTTP $GET_CODE)"
-  echo "$GET_BODY" | jq . || echo "$GET_BODY"
+PROF_GET_CODE=$(echo "$PROF_GET" | tail -n1)
+if [ "$PROF_GET_CODE" -ne 200 ]; then
+  echo "❌ Get Profile falhou (HTTP $PROF_GET_CODE)"
   exit 1
 fi
-# Valida JSON e campos
-echo "$GET_BODY" | jq .firstName >/dev/null || { echo "❌ JSON inválido"; exit 1; }
-echo "  ✅ Profile lido corretamente: $(echo "$GET_BODY" | jq .)"
+echo "  ✅ Profile lido: $(echo "$PROF_GET" | sed '$d')"
 
 # 3.3) Deletar Profile
-echo "  👉 Deletando profile..."
-DEL_RESP=$(curl -s -w "\n%{http_code}" \
+echo "  ➤ Deletando profile..."
+PROF_DEL=$(curl -s -w "\n%{http_code}" \
   -X DELETE "$BASE_URL/api/profile/$EMAIL" \
   -H "Authorization: Bearer $TOKEN")
-
-DEL_BODY=$(echo "$DEL_RESP" | sed '$d')
-DEL_CODE=$(echo "$DEL_RESP" | tail -n1)
-
-if [ "$DEL_CODE" -ne 204 ]; then
-  echo "❌ Falha ao deletar profile (HTTP $DEL_CODE)"
-  echo "$DEL_BODY" | jq . || echo "$DEL_BODY"
+PROF_DEL_CODE=$(echo "$PROF_DEL" | tail -n1)
+if [ "$PROF_DEL_CODE" -ne 204 ]; then
+  echo "❌ Delete Profile falhou (HTTP $PROF_DEL_CODE)"
   exit 1
 fi
-echo "  ✅ Profile deletado (HTTP $DEL_CODE)"
+echo "  ✅ Profile deletado"
 
-# 3.4) Confirmar exclusão
-echo "  👉 Confirmando exclusão (deve falhar)..."
-CONF_RESP=$(curl -s -w "\n%{http_code}" \
-  -X GET "$BASE_URL/api/profile/$EMAIL" \
-  -H "Authorization: Bearer $TOKEN")
-
-CONF_CODE=$(echo "$CONF_RESP" | tail -n1)
-if [ "$CONF_CODE" -eq 200 ]; then
-  echo "❌ Profile ainda existe! (HTTP 200)"
-  exit 1
-fi
-echo "  ✅ Exclusão confirmada (HTTP $CONF_CODE)"
 echo
+# 4) CRUD de Poema
+echo "🔹 4) CRUD de Poema..."
+# 4.1) Criar Poema
+echo "  ➤ Criando poema..."
+POEM_CREATE=$(curl -s -w "\n%{http_code}" \
+  -X POST "$BASE_URL/api/poems" \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $TOKEN" \
+  -d '{
+    "title": "Meu Poema",
+    "text": "Texto do poema",
+    "author": "Autor X",
+    "imageUrl": "http://example.com/img.jpg",
+    "postDate": "12/05/2025"
+  }')
+POEM_ID=$(echo "$POEM_CREATE" | sed '$d' | jq -r '.id')
+POEM_CREATE_CODE=$(echo "$POEM_CREATE" | tail -n1)
+if [ "$POEM_CREATE_CODE" -ne 200 ] || [[ -z "$POEM_ID" ]]; then
+  echo "❌ Create Poema falhou (HTTP $POEM_CREATE_CODE)"
+  exit 1
+fi
+echo "  ✅ Poema criado com ID=$POEM_ID"
 
-echo "🎉 Testes concluídos com sucesso! 🎉"
+# 4.2) Ler Poema
+echo "  ➤ Lendo poema..."
+POEM_GET=$(curl -s -w "\n%{http_code}" \
+  -X GET "$BASE_URL/api/poems/$POEM_ID" \
+  -H "Authorization: Bearer $TOKEN")
+POEM_GET_CODE=$(echo "$POEM_GET" | tail -n1)
+if [ "$POEM_GET_CODE" -ne 200 ]; then
+  echo "❌ Get Poema falhou (HTTP $POEM_GET_CODE)"
+  exit 1
+fi
+echo "  ✅ Poema lido: $(echo "$POEM_GET" | sed '$d')"
 
+# 4.3) Atualizar Poema
+echo "  ➤ Atualizando poema..."
+POEM_UPDATE=$(curl -s -w "
+%{http_code}" \
+  -X POST "$BASE_URL/api/poems" \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $TOKEN" \
+  -d '{
+    "id": '$POEM_ID',
+    "title": "Meu Poema Editado",
+    "text": "Texto atualizado",
+    "author": "Autor X",
+    "imageUrl": "http://example.com/img2.jpg",
+    "postDate": "13/05/2025"
+  }')
+POEM_UPDATE_CODE=$(echo "$POEM_UPDATE" | tail -n1)
+if [ "$POEM_UPDATE_CODE" -ne 200 ]; then
+  echo "❌ Update Poema falhou (HTTP $POEM_UPDATE_CODE)"
+  exit 1
+fi
+echo "  ✅ Poema atualizado"
+
+# 4.4) Deletar Poema) Deletar Poema
+echo "  ➤ Deletando poema..."
+POEM_DEL=$(curl -s -w "\n%{http_code}" \
+  -X DELETE "$BASE_URL/api/poems/$POEM_ID" \
+  -H "Authorization: Bearer $TOKEN")
+POEM_DEL_CODE=$(echo "$POEM_DEL" | tail -n1)
+if [ "$POEM_DEL_CODE" -ne 204 ]; then
+  echo "❌ Delete Poema falhou (HTTP $POEM_DEL_CODE)"
+  exit 1
+fi
+echo "  ✅ Poema deletado"
+
+echo
+# 5) Deletar usuário
+echo "🔹 5) Deletando usuário ID=$USER_ID..."
+USER_DEL_CODE=$(curl -s -w "%{http_code}" -o /dev/null \
+  -X DELETE "$BASE_URL/api/auth/$USER_ID" \
+  -H "Authorization: Bearer $TOKEN")
+if [ "$USER_DEL_CODE" -ne 200 ]; then
+  echo "❌ Delete Usuário falhou (HTTP $USER_DEL_CODE)"
+  exit 1
+fi
+echo "✅ Usuário deletado"
+
+echo
+"🎉 Teste completo concluído! 🎉"

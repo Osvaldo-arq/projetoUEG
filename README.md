@@ -15,75 +15,76 @@ Uma API REST para um sistema de poemas, com foco atual na autenticação de usu�
 ```
 poem-api/
 ├── src/
-│ ├── main/
-│ │ ├─ java/
-│ │ │ └── project/
-│ │ │ └── poem/
-│ │ │ ├── api/
-│ │ │ │ └── controller/
-│ │ │ │ ├── AuthController.java
-│ │ │ │ └── ProfileController.java
-│ │ │ ├── application/
-│ │ │ │ ├── dto/
-│ │ │ │ │ ├── LoginDto.java
-│ │ │ │ │ ├── UserDto.java
-│ │ │ │ │ └── ProfileDto.java
-│ │ │ │ └── service/
-│ │ │ │ ├── UserDetailsServices.java
-│ │ │ │ ├── UserService.java
-│ │ │ │ └── ProfileService.java
-│ │ │ ├── domain/
-│ │ │ │ ├── model/
-│ │ │ │ │ ├── User.java
-│ │ │ │ │ ├── Role.java
-│ │ │ │ │ └── Profile.java
-│ │ │ │ └── repository/
-│ │ │ │ ├── UserRepository.java
-│ │ │ │ └── ProfileRepository.java
-│ │ │ ├── infrastructure/
-│ │ │ │ ├── config/
-│ │ │ │ │ └── SecurityConfig.java
-│ │ │ │ └── security/
-│ │ │ │ ├── JwtTokenProvider.java
-│ │ │ │ └── JwtAuthenticationFilter.java
-│ │ │ └── PoemApplication.java
-│ └── resources/
-│ └── application.properties
+│   ├── main/
+│   │   ├── java/
+│   │   │   └── project/
+│   │   │       └── poem/
+│   │   │           ├── api/
+│   │   │           │   └── controller/     # Controladores REST da API
+│   │   │           │       ├── AuthController.java
+│   │   │           │       ├── ProfileController.java
+│   │   │           │       └── PoemController.java
+│   │   │           ├── application/
+│   │   │           │   ├── dto/            # Data Transfer Objects
+│   │   │           │       ├── LoginDto.java
+│   │   │           │       ├── UserDto.java
+│   │   │           │       ├── ProfileDto.java
+│   │   │           │       └── PoemDto.java
+│   │   │           │   └── service/        # Lógica de negócios da aplicação
+│   │   │           │       ├── UserDetailsServices.java
+│   │   │           │       ├── UserService.java
+│   │   │           │       ├── ProfileService.java
+│   │   │           │       └── PoemService.java
+│   │   │           ├── domain/
+│   │   │           │   ├── model/          # Modelos de domínio (entidades)
+│   │   │           │       ├── User.java
+│   │   │           │       ├── Role.java
+│   │   │           │       ├── Profile.java
+│   │   │           │       └── Poem.java
+│   │   │           │   └── repository/     # Repositórios JPA para acesso aos dados
+│   │   │           │       ├── UserRepository.java
+│   │   │           │       ├── ProfileRepository.java
+│   │   │           │       └── PoemRepository.java
+│   │   │           ├── infrastructure/
+│   │   │           │   ├── config/         # Classes de configuração da aplicação
+│   │   │           │       └── SecurityConfig.java
+│   │   │           │   └── security/       # Classes relacionadas à segurança (JWT,Filtros)
+│   │   │           │       ├── JwtTokenProvider.java
+│   │   │           │       └── JwtAuthenticationFilter.java
+│   │   │           └── PoemApplication.java # Classe principal do Spring Boot
+│   │   └── resources/
+│   │       └── application.properties       # Arquivo de configuração da aplicação
 
 ```
 ## ✨ Funcionalidades Implementadas
 
-* **✍️ Registro de Usuário:** Permite que novos usuários se registrem no sistema.  
-* **🚪 Login de Usuário:** Permite que usuários registrados façam login e obtenham um token JWT.  
-* **🔒 Autenticação JWT:** Protege endpoints da API, exigindo um token JWT válido para acesso.  
-* **🚦 Controle de Acesso Baseado em Roles:** Proteção de endpoints com base nas roles `USER` e `ADMIN`.  
-* **👤 CRUD de Profile:** Endpoints para criar, ler, listar e deletar perfis de usuário, vinculados pelo e-mail.
+* **✍️ Registro de Usuário:** Registra novos usuários no sistema.
+* **🚪 Login de Usuário:** Autenticação com retorno de token JWT.
+* **🔒 Autenticação JWT:** Proteção de endpoints com token.
+* **🚦 Controle de Acesso Baseado em Roles:** Acesso diferenciado para `USER` e `ADMIN`.
+* **👤 CRUD de Profile:** Gerenciamento de perfis vinculados por e-mail.
+* **📜 CRUD de Poemas:** Criar, editar, listar, buscar por ID e deletar poemas.
+* **📆 Suporte a datas no formato `dd/MM/yyyy`** para o campo `postDate` dos poemas.
+* **🛠 Criação automática do banco de dados** (`createDatabaseIfNotExist=true` no JDBC).
 
 ## ⚙️ Endpoints da API
 
 ### 🔑 Autenticação (`/api/auth`)
-
-* **POST `/register`:** Registra um novo usuário. Espera um objeto JSON no corpo da requisição com os campos: `username`, `password`, `confirmPassword`, `email`, `role`. Retorna um token JWT em caso de sucesso ou uma mensagem de erro. Os dados do usuário são persistidos no banco de dados MySQL.
-* **POST `/login`:** Autentica um usuário existente. Espera um objeto JSON no corpo da requisição com os campos: `username`, `password`. Retorna um token JWT em caso de sucesso ou uma mensagem de erro, após verificar as credenciais no banco de dados MySQL.
+* **POST `/register`** – Cria novo usuário.
+* **POST `/login`** – Autentica usuário existente e retorna token JWT.
 
 ### 📜 Poemas (`/api/poems`)
+* **GET `/api/poems`** – Lista todos os poemas.
+* **GET `/api/poems/{id}`** – Retorna poema por ID.
+* **POST `/api/poems`** – Cria ou atualiza um poema.
+* **DELETE `/api/poems/{id}`** – Remove poema por ID.
 
-* **GET `/api/poems`:** (Exemplo de endpoint protegido) Acesso permitido a usuários com role `USER` ou `ADMIN` (a lógica real para listar poemas ainda não foi implementada, mas a autenticação e autorização estão funcionando com base nos dados do MySQL).
+**⛔ Todos os endpoints de poemas exigem autenticação JWT e role `USER` ou `ADMIN`.**
 
 ### 👤 Perfis (`/api/profile`)
-
-* **GET `/api/profile`**  
-  - Lista todos os profiles.  
-  - Requer token JWT com role `USER` ou `ADMIN`.
-
-* **GET `/api/profile/{email}`**  
-  - Busca um profile pelo e-mail.  
-  - Requer token JWT com role `USER` ou `ADMIN`.
-
-* **POST `/api/profile`**  
-  - Cria ou atualiza um profile.  
-  - Body JSON.
-  - Requer token JWT com role `USER` ou `ADMIN`.
+* **GET `/api/profile`** – Lista todos os perfis.
+* **GET `/api/profile/{email}`** – Busca por e-mail.
+* **POST `/api/profile`** – Cria ou atualiza um perfil.
 
 ## 🛡️ Segurança
 
