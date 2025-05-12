@@ -15,45 +15,51 @@ Uma API REST para um sistema de poemas, com foco atual na autenticação de usu�
 ```
 poem-api/
 ├── src/
-│   ├── main/
-│   │   ├─ java/
-│   │   │ └── project/
-│   │   │   └── poem/
-│   │   │   ├── api/
-│   │   │   │ └── controller/     # Controladores REST da API
-│   │   │   │   └── AuthController.java
-│   │   │   ├── application/
-│   │   │   │ ├── dto/            # Data Transfer Objects
-│   │   │   │ │ └── LoginDto.java
-│   │   │   │ │ └── UserDto.java
-│   │   │   │ └── service/        # Lógica de negócios da aplicação
-│   │   │   │   └── UserDetailsServices.java
-│   │   │   │   └── UserService.java
-│   │   │   ├── domain/
-│   │   │   │ ├── model/          # Modelos de domínio (entidades)
-│   │   │   │ │ └── Profile.java
-│   │   │   │ │ └── Role.java
-│   │   │   │ │ └── User.java
-│   │   │   │ └── repository/     # Repositórios JPA para acesso aos dados
-│   │   │   │   └── ProfileRepository.java
-│   │   │   │   └── UserRepository.java
-│   │   │   ├── infrastructure/
-│   │   │   │ ├── config/         # Classes de configuração da aplicação
-│   │   │   │ │ └── SecurityConfig.java
-│   │   │   │ └── security/       # Classes relacionadas à segurança (JWT,Filtros)
-│   │   │   │   └── JwtAuthenticationFilter.java
-│   │   │   │   └── JwtTokenProvider.java
-│   │   │   └── PoemApplication.java # Classe principal do Spring Boot
+│ ├── main/
+│ │ ├─ java/
+│ │ │ └── project/
+│ │ │ └── poem/
+│ │ │ ├── api/
+│ │ │ │ └── controller/
+│ │ │ │ ├── AuthController.java
+│ │ │ │ └── ProfileController.java
+│ │ │ ├── application/
+│ │ │ │ ├── dto/
+│ │ │ │ │ ├── LoginDto.java
+│ │ │ │ │ ├── UserDto.java
+│ │ │ │ │ └── ProfileDto.java
+│ │ │ │ └── service/
+│ │ │ │ ├── UserDetailsServices.java
+│ │ │ │ ├── UserService.java
+│ │ │ │ └── ProfileService.java
+│ │ │ ├── domain/
+│ │ │ │ ├── model/
+│ │ │ │ │ ├── User.java
+│ │ │ │ │ ├── Role.java
+│ │ │ │ │ └── Profile.java
+│ │ │ │ └── repository/
+│ │ │ │ ├── UserRepository.java
+│ │ │ │ └── ProfileRepository.java
+│ │ │ ├── infrastructure/
+│ │ │ │ ├── config/
+│ │ │ │ │ └── SecurityConfig.java
+│ │ │ │ └── security/
+│ │ │ │ ├── JwtTokenProvider.java
+│ │ │ │ └── JwtAuthenticationFilter.java
+│ │ │ └── PoemApplication.java
+│ └── resources/
+│ └── application.properties
 
 ```
 ## ✨ Funcionalidades Implementadas
 
-* **✍️ Registro de Usuário:** Permite que novos usuários se registrem no sistema.
-* **🚪 Login de Usuário:** Permite que usuários registrados façam login e obtenham um token JWT.
-* **🔒 Autenticação JWT:** Protege endpoints da API, exigindo um token JWT válido para acesso.
-* **🚦 Controle de Acesso Baseado em Roles:** Demonstração de proteção de endpoints com base nas roles `USER` e `ADMIN`.
+* **✍️ Registro de Usuário:** Permite que novos usuários se registrem no sistema.  
+* **🚪 Login de Usuário:** Permite que usuários registrados façam login e obtenham um token JWT.  
+* **🔒 Autenticação JWT:** Protege endpoints da API, exigindo um token JWT válido para acesso.  
+* **🚦 Controle de Acesso Baseado em Roles:** Proteção de endpoints com base nas roles `USER` e `ADMIN`.  
+* **👤 CRUD de Profile:** Endpoints para criar, ler, listar e deletar perfis de usuário, vinculados pelo e-mail.
 
-## ⚙️ Endpoints da API (Implementados)
+## ⚙️ Endpoints da API
 
 ### 🔑 Autenticação (`/api/auth`)
 
@@ -63,6 +69,21 @@ poem-api/
 ### 📜 Poemas (`/api/poems`)
 
 * **GET `/api/poems`:** (Exemplo de endpoint protegido) Acesso permitido a usuários com role `USER` ou `ADMIN` (a lógica real para listar poemas ainda não foi implementada, mas a autenticação e autorização estão funcionando com base nos dados do MySQL).
+
+### 👤 Perfis (`/api/profile`)
+
+* **GET `/api/profile`**  
+  - Lista todos os profiles.  
+  - Requer token JWT com role `USER` ou `ADMIN`.
+
+* **GET `/api/profile/{email}`**  
+  - Busca um profile pelo e-mail.  
+  - Requer token JWT com role `USER` ou `ADMIN`.
+
+* **POST `/api/profile`**  
+  - Cria ou atualiza um profile.  
+  - Body JSON.
+  - Requer token JWT com role `USER` ou `ADMIN`.
 
 ## 🛡️ Segurança
 
