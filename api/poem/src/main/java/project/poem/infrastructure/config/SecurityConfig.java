@@ -61,6 +61,8 @@ public class SecurityConfig {
                 .requestMatchers("/api/poems/**").hasAnyRole("USER", "ADMIN")
                 // Permite acesso aos endpoints de profile para usuários com as roles ROLE_USER ou ROLE_ADMIN.
                 .requestMatchers("/api/profile/**").hasAnyRole("USER", "ADMIN")
+                // Permite acesso aos endpoints "api/comments" para usuários com as roles ROLE_USER ou ROLE_ADMIN.
+                .requestMatchers("/api/comments/**").hasAnyRole("USER", "ADMIN")
                 // Exige autenticação para qualquer outra requisição que não corresponda aos padrões anteriores.
                 .anyRequest().authenticated()
             )
