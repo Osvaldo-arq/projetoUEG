@@ -1,4 +1,4 @@
-# Poem API (Status Atual)
+# Poemas API(Status Atual)
 
 Uma API REST para um sistema de poemas, com foco atual na autenticação de usuários.
 
