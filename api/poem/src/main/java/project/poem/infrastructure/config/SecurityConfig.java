@@ -34,8 +34,7 @@ public class SecurityConfig {
      * @param jwtTokenProvider   Componente responsável por gerar e validar tokens JWT.
      * @param userDetailsService Serviço responsável por carregar os detalhes do usuário.
      */
-    public SecurityConfig(JwtTokenProvider jwtTokenProvider,
-                          UserDetailsServices userDetailsService) {
+    public SecurityConfig(JwtTokenProvider jwtTokenProvider, UserDetailsServices userDetailsService) {
         this.jwtTokenProvider = jwtTokenProvider;
         this.userDetailsService = userDetailsService;
     }
@@ -59,7 +58,9 @@ public class SecurityConfig {
                 // Permite acesso irrestrito ao endpoint de autenticação ("/api/auth/**").
                 .requestMatchers("/api/auth/**").permitAll()
                 // Permite acesso ao endpoint "/api/poems" para usuários com as roles ROLE_USER ou ROLE_ADMIN.
-                .requestMatchers("/api/poems").hasAnyRole("USER", "ADMIN")
+                .requestMatchers("/api/poems/**").hasAnyRole("USER", "ADMIN")
+                // Permite acesso aos endpoints de profile para usuários com as roles ROLE_USER ou ROLE_ADMIN.
+                .requestMatchers("/api/profile/**").hasAnyRole("USER", "ADMIN")
                 // Exige autenticação para qualquer outra requisição que não corresponda aos padrões anteriores.
                 .anyRequest().authenticated()
             )

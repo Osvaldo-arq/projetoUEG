@@ -5,6 +5,7 @@ import java.io.IOException;
 import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import jakarta.servlet.FilterChain;
@@ -13,7 +14,6 @@ import jakarta.servlet.annotation.WebFilter;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import project.poem.application.service.UserDetailsServices;
-import project.poem.domain.model.User;
 
 /**
  * Filtro de autenticação JWT que intercepta todas as requisições para verificar a presença
@@ -61,12 +61,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             String username = jwtTokenProvider.getUsername(token);
 
             // Carrega os detalhes do usuário com base no nome de usuário obtido do token.
-            User user = (User) userDetailsService.loadUserByUsername(username);
+            UserDetails userDetails = userDetailsService.loadUserByUsername(username);
 
             // Cria um objeto de autenticação do Spring Security (UsernamePasswordAuthenticationToken)
             // com o usuário carregado, sem as credenciais (null), e suas autoridades (roles).
-            UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
-                    user, null, user.getAuthorities());
+            UsernamePasswordAuthenticationToken authentication =
+                new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
 
             // Define a autenticação no contexto de segurança do Spring Security.
             // Isso indica que o usuário está autenticado para esta requisição.

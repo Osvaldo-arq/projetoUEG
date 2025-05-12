@@ -21,4 +21,10 @@ public interface ProfileRepository extends JpaRepository<Profile, Long> {
      * @return Um {@link Optional} contendo o perfil encontrado (se existir) ou um {@link Optional} vazio caso contrário.
      */
     Optional<Profile> findByUserEmail(String email);
+    /**
+     * Deleta um perfil pelo email do usuário associado.
+     * @param email O email do usuário a ser deletado.
+     */
+    void deleteByUserEmail(String email);
+
 }
