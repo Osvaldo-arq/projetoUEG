@@ -6,6 +6,7 @@ import java.util.List;
 import javax.validation.Valid;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import project.poem.application.dto.PoemDto;
+import project.poem.application.service.LikeService;
 import project.poem.application.service.PoemService;
 
 /**
@@ -26,14 +28,16 @@ import project.poem.application.service.PoemService;
 public class PoemController {
 
     private final PoemService poemService;
+    private final LikeService likeService;
 
     /**
      * Construtor para injetar a dependência de PoemService.
      *
      * @param poemService O serviço responsável pela lógica de negócios dos poemas.
      */
-    public PoemController(PoemService poemService) {
+    public PoemController(PoemService poemService, LikeService likeService) {
         this.poemService = poemService;
+        this.likeService = likeService;
     }
 
     /**
@@ -82,5 +86,44 @@ public class PoemController {
     public ResponseEntity<Void> deletePoem(@PathVariable Long id) {
         poemService.deleteById(id);
         return ResponseEntity.noContent().build();
+    }
+
+    /**
+     * Endpoint para curtir um poema.
+     * O usuário deve estar autenticado para realizar esta ação.
+     * @param id O ID do poema a ser curtido.
+     * @return ResponseEntity com status 200 (OK) indicando sucesso na ação.
+     */
+    @PostMapping("/{id}/like")
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+    public ResponseEntity<Void> likePoem(@PathVariable Long id) {
+        likeService.likePoem(id);
+        return ResponseEntity.ok().build();
+    }
+
+    /**
+     * Endpoint para descurtir um poema.
+     * O usuário deve estar autenticado para realizar esta ação.
+     * @param id O ID do poema a ser descurtido.
+     * @return ResponseEntity com status 204 (No Content) indicando sucesso na ação.
+     */
+    @DeleteMapping("/{id}/like")
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+    public ResponseEntity<Void> unlikePoem(@PathVariable Long id) {
+        likeService.unlikePoem(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    /**
+     * Endpoint para contar o número de curtidas em um poema.
+     * O usuário deve estar autenticado para visualizar esta informação.
+     * @param id O ID do poema cujo número de curtidas será contado.
+     * @return ResponseEntity contendo o número total de curtidas com status 200 (OK).
+     */
+    @GetMapping("/{id}/likes")
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+    public ResponseEntity<Long> countLikes(@PathVariable Long id) {
+        long total = likeService.countLikes(id);
+        return ResponseEntity.ok(total);
     }
 }

@@ -1,6 +1,6 @@
 # Poemas API (Status Atual)
 
-Uma API REST para um sistema de poemas, com autenticação de usuários, gerenciamento de perfis, poemas e comentários.
+Uma API REST para um sistema de poemas, com autenticação de usuários, gerenciamento de perfis, poemas, comentários e curtidas.
 
 ## 🛠️ Tecnologias Utilizadas
 
@@ -22,111 +22,117 @@ poem-api/
 │   │   │       │   ├── AuthController.java                 
 │   │   │       │   ├── ProfileController.java
 │   │   │       │   ├── PoemController.java
-│   │   │       │   └── CommentController.java
+│   │   │       │   ├── CommentController.java
+│   │   │       │   └── LikeController.java
 │   │   │       ├── application/
 │   │   │       │   ├── dto/                                 # Data Transfer Objects
 │   │   │       │   │   ├── LoginDto.java
 │   │   │       │   │   ├── UserDto.java
 │   │   │       │   │   ├── ProfileDto.java
 │   │   │       │   │   ├── PoemDto.java
-│   │   │       │   │   └── CommentDto.java
-│   │   │       │   └── service/                             # Lógica de negócios da aplicação
+│   │   │       │   │   ├── CommentDto.java
+│   │   │       │   │   └── LikeDto.java
+│   │   │       │   └── service/                             # Lógica de negócios
 │   │   │       │       ├── UserService.java
 │   │   │       │       ├── ProfileService.java
 │   │   │       │       ├── PoemService.java
-│   │   │       │       └── CommentService.java
+│   │   │       │       ├── CommentService.java
+│   │   │       │       └── LikeService.java
 │   │   │       ├── domain/
-│   │   │       │   ├── model/                               # Modelos de domínio (entidades)
+│   │   │       │   ├── model/                               # Entidades
 │   │   │       │   │   ├── User.java
 │   │   │       │   │   ├── Profile.java
 │   │   │       │   │   ├── Poem.java
-│   │   │       │   │   └── Comment.java
-│   │   │       │   └── repository/                          # Repositórios JPA para acesso aos dados
+│   │   │       │   │   ├── Comment.java
+│   │   │       │   │   └── PoemLike.java
+│   │   │       │   └── repository/                          # Repositórios JPA
 │   │   │       │       ├── UserRepository.java
 │   │   │       │       ├── ProfileRepository.java
 │   │   │       │       ├── PoemRepository.java
-│   │   │       │       └── CommentRepository.java
+│   │   │       │       ├── CommentRepository.java
+│   │   │       │       └── PoemLikeRepository.java
 │   │   │       ├── infrastructure/
-│   │   │       │   ├── config/SecurityConfig.java           # Classes de configuração da aplicação
-│   │   │       │   └── security/                            # Classes relacionadas à segurança
+│   │   │       │   ├── config/SecurityConfig.java           # Configurações
+│   │   │       │   └── security/                            # JWT & filtros
 │   │   │       │       ├── JwtTokenProvider.java
 │   │   │       │       └── JwtAuthenticationFilter.java
-│   │   │       └── PoemApplication.java                     # Classe principal do Spring Boot
+│   │   │       └── PoemApplication.java                     # Classe principal
 │   │   └── resources/
-│   │       └── application.properties                       # Arquivo de configuração da aplicação
+│   │       └── application.properties                       # Configuração
 ```
 
 ## ✨ Funcionalidades Implementadas
 
-* **✍️ Registro de Usuário:** Permite que novos usuários se registrem no sistema.  
-* **🚪 Login de Usuário:** Permite que usuários registrados façam login e obtenham um token JWT.  
-* **🔒 Autenticação JWT:** Protege endpoints da API, exigindo um token JWT válido para acesso.  
-* **🚦 Controle de Acesso Baseado em Roles:** Proteção de endpoints com base nas roles `USER` e `ADMIN`.  
-* **👤 CRUD de Profile:** Operações de criar, ler e deletar perfis vinculados por e-mail.  
-* **📜 CRUD de Poemas:** Operações de criar, listar, buscar, atualizar e deletar poemas.  
-* **💬 CRUD de Comentários:** Operações de criar, listar, atualizar e deletar comentários de poemas, com controle de autorização (autor/ADMIN).  
-* **📆 Datas no formato `dd/MM/yyyy`:** Para campos `postDate` e `commentDate`.
+* **✍️ Registro de Usuário**  
+* **🚪 Login de Usuário**  
+* **🔒 Autenticação JWT**  
+* **🚦 Controle de Acesso por Roles (`USER`, `ADMIN`)**  
+* **👤 CRUD de Profile**  
+* **📜 CRUD de Poemas**  
+* **💬 CRUD de Comentários**  
+* **❤️ CRUD de Curtidas em Poemas**  
+* **📆 Datas no formato `dd/MM/yyyy`**  
 
 ## ⚙️ Endpoints da API
 
 ### 🔑 Autenticação (`/api/auth`)
-* **POST `/register`:** Registra um novo usuário (username, password, confirmPassword, email, role).  
-* **POST `/login`:** Autentica usuário (username, password) e retorna token JWT.
+* **POST `/register`** – Registra novo usuário.  
+* **POST `/login`** – Autentica usuário e retorna JWT.
 
 ### 📜 Poemas (`/api/poems`)
-* **GET `/api/poems`:** Lista todos os poemas.  
-* **GET `/api/poems/{id}`:** Retorna poema por ID.  
-* **POST `/api/poems`:** Cria ou atualiza um poema (title, text, author, imageUrl, postDate).  
-* **DELETE `/api/poems/{id}`:** Deleta um poema por ID.
+* **GET** `/api/poems` – Lista todos.  
+* **GET** `/api/poems/{id}` – Detalha por ID.  
+* **POST** `/api/poems` – Cria ou atualiza.  
+* **DELETE** `/api/poems/{id}` – Exclui.  
+
+### ❤️ Curtidas (`/api/poems/{id}`)
+* **POST** `/api/poems/{id}/like` – Registra curtida.  
+* **DELETE** `/api/poems/{id}/like` – Remove curtida.  
+* **GET** `/api/poems/{id}/likes` – Conta curtidas.
 
 ### 👤 Perfis (`/api/profile`)
-* **GET `/api/profile`:** Lista todos os perfis.  
-* **GET `/api/profile/{email}`:** Busca perfil por e-mail.  
-* **POST `/api/profile`:** Cria ou atualiza um perfil (firstName, lastName, phone, userEmail).
+* **GET** `/api/profile` – Lista todos.  
+* **GET** `/api/profile/{email}` – Busca por e-mail.  
+* **POST** `/api/profile` – Cria ou atualiza.
 
 ### 💬 Comentários (`/api/comments`)
-* **GET `/api/comments/poem/{poemId}`:** Lista comentários de um poema.  
-* **POST `/api/comments`:** Cria comentário (author, content, commentDate, poemId).  
-* **PUT `/api/comments/{id}`:** Atualiza um comentário (somente autor ou ADMIN).  
-* **DELETE `/api/comments/{id}`:** Deleta um comentário (somente autor ou ADMIN).
+* **GET** `/api/comments/poem/{poemId}` – Lista por poema.  
+* **POST** `/api/comments` – Cria.  
+* **PUT** `/api/comments/{id}` – Atualiza.  
+* **DELETE** `/api/comments/{id}` – Exclui.
 
-> **Todos** os endpoints (exceto `/api/auth/**`) exigem autenticação JWT e roles `USER` ou `ADMIN`.
+> 🔒 **JWT** obrigatório em todos (exceto `/api/auth/**`).
 
 ## 🛡️ Segurança
 
-- JWT no header:  
-  `Authorization: Bearer <token>`  
-- Validação pelo filtro `JwtAuthenticationFilter`.  
-- Controle de acesso via `@PreAuthorize` em cada controller.
+* Header `Authorization: Bearer <token>`.  
+* `@PreAuthorize` em controllers.
 
 ## ⚙️ Configuração
 
 ```properties
 spring.datasource.url=jdbc:mysql://localhost:3306/poemdb?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=UTC
-spring.datasource.username=""
-spring.datasource.password=""
+spring.datasource.username=<usuário>
+spring.datasource.password=<senha>
 spring.jpa.hibernate.ddl-auto=update
-spring.jpa.show-sql=true
-spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.MySQL8Dialect
 
-jwt.secret=""
-jwt.expiration=""
+jwt.secret=<chave>
+jwt.expiration=86400000
 ```
 
 ## 🚀 Como Executar
 
-1. Clone o repositório e acesse a pasta:  
-   ```bash
-   git clone <URL>
-   cd poem-api
-   ```
-2. Build e run:  
-   ```bash
-   mvn clean install
-   mvn spring-boot:run
-   ```
-3. Teste com o script `test_api.sh`.
+```bash
+git clone <URL>
+cd poem-api
+mvn clean install
+mvn spring-boot:run
+```
+
+Teste com `test_api.sh`.
 
 ## ⏭️ Próximos Passos
 
-- Ajustes na logica  
+* Upload de imagens.  
+* Paginação e filtros.  
+* Testes de integração.  
