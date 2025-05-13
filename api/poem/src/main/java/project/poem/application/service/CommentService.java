@@ -22,6 +22,7 @@ public class CommentService {
 
     private final CommentRepository commentRepo;
     private final PoemRepository poemRepo;
+    @SuppressWarnings("unused")
     private final UserRepository userRepository;
 
     /**

@@ -52,7 +52,9 @@ poem-api/
 │   │   │       │       ├── CommentRepository.java
 │   │   │       │       └── PoemLikeRepository.java
 │   │   │       ├── infrastructure/
-│   │   │       │   ├── config/SecurityConfig.java           # Configurações
+│   │   │       │   ├── config/                              # Configurações
+│   │   │       │       ├── SecurityConfig.java  
+│   │   │       │       ├── CorsConfig.java         
 │   │   │       │   └── security/                            # JWT & filtros
 │   │   │       │       ├── JwtTokenProvider.java
 │   │   │       │       └── JwtAuthenticationFilter.java

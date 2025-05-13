@@ -6,6 +6,7 @@ const API = process.env.REACT_APP_API_URL || 'http://localhost:8080';
 /**
  * Serviço de autenticação para lidar com o registro e login de usuários.
  */
+// eslint-disable-next-line import/no-anonymous-default-export
 export default {
   /**
    * Registra um novo usuário.
