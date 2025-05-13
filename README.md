@@ -132,7 +132,104 @@ mvn spring-boot:run
 Teste com `test_api.sh`.
 
 ## ⏭️ Próximos Passos
-
-* Upload de imagens.  
+  
 * Paginação e filtros.  
 * Testes de integração.  
+
+# Poem Frontend (Status Atual)
+
+Este repositório contém o frontend em React para o sistema de poemas. Implementa telas de login, cadastro e dashboards para as roles `USER` e `ADMIN`.
+
+## 🛠️ Tecnologias Utilizadas
+
+* **🌐 React:** Biblioteca principal para UI.  
+* **⚙️ React Router DOM:** Roteamento de páginas.  
+* **🔗 Fetch API:** Comunicação com o backend via HTTP.  
+* **💅 CSS:** Estilos globais simples.  
+
+## 📂 Estrutura de Pastas
+```
+poem-frontend/
+├── public/
+│   └── index.html                   # HTML base
+├── src/
+│   ├── domain/                      # Entidades de domínio
+│   │   └── User.js                  # Modelo de usuário
+│   ├── application/                 # Serviços de aplicação (use cases)
+│   │   └── AuthService.js           # Lógica de login/cadastro
+│   ├── infrastructure/              # Adaptadores de infra (HTTP client)
+│   │   └── HttpClient.js            # Fetch wrappers
+│   ├── presentation/                # Partes visuais e rotas
+│   │   ├── components/              # Componentes reutilizáveis
+│   │   │   ├── LoginForm.jsx
+│   │   │   └── RegisterForm.jsx
+│   │   ├── pages/                   # Páginas principais
+│   │   │   ├── DashboardUser.jsx
+│   │   │   └── DashboardAdmin.jsx
+│   │   ├── App.jsx                  # Configuração de rotas
+│   │   └── index.js                 # Ponto de entrada React
+│   └── styles/
+│       └── global.css               # Estilos globais
+└── .gitignore                       # Arquivos ignorados pelo Git
+```
+
+## ✨ Funcionalidades Implementadas
+
+* **🔐 Autenticação:**  
+  * Tela de cadastro (role `USER` por padrão).  
+  * Tela de login e armazenamento de JWT e `role` no `localStorage`.  
+* **🚪 Roteamento Protegido:**  
+  * Usuário não autenticado redirecionado para login.  
+  * Após login, direcionamento para dashboard conforme `role`.  
+* **👤 Dashboards:**  
+  * **Dashboard User:** Interface básica para usuários comuns.  
+  * **Dashboard Admin:** Interface dedicada para administradores.  
+
+## ⚙️ Rotas do Frontend
+
+| Rota            | Componente         | Descrição                                    |
+|-----------------|--------------------|----------------------------------------------|
+| `/login`        | `LoginForm.jsx`    | Tela de login                                |
+| `/register`     | `RegisterForm.jsx` | Tela de cadastro                             |
+| `/dashboard`    | `DashboardUser` ou `DashboardAdmin` | Exibe dashboard de acordo com o `role` |
+
+## 📦 Scripts Disponíveis
+
+No diretório do projeto, execute:
+
+* `npm install` — Instala dependências.  
+* `npm start` — Executa em modo desenvolvimento (http://localhost:3000).  
+* `npm run build` — Cria build otimizado para produção.
+
+## ⚙️ Configuração
+
+Para apontar ao backend, use:
+
+* Variável de ambiente em `.env`:
+  ```env
+  REACT_APP_API_URL=http://localhost:8080
+  ```
+
+## 🚀 Como Executar
+
+1. Clone o repositório:
+   ```bash
+   git clone <URL>
+   cd poem-frontend
+   ```
+2. Instale dependências:
+   ```bash
+   npm install
+   ```
+3. Inicie em modo de desenvolvimento:
+   ```bash
+   npm start
+   ```
+4. Acesse `http://localhost:3000`.
+
+## ⏭️ Próximos Passos
+
+* Adicionar formulários de poema e comentário.  
+* Consumir endpoints de CRUD de poemas, perfis, comentários e curtidas.  
+* Melhorar estilos e usabilidade.  
+* Implementar testes automatizados.  
