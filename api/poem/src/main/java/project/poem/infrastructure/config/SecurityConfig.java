@@ -1,5 +1,7 @@
 package project.poem.infrastructure.config;
 
+import java.util.List;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -10,6 +12,9 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import project.poem.application.service.UserDetailsServices;
 import project.poem.infrastructure.security.JwtAuthenticationFilter;
@@ -17,9 +22,7 @@ import project.poem.infrastructure.security.JwtTokenProvider;
 
 /**
  * Classe de configuração para o Spring Security.
- * Define as regras de segurança para as requisições HTTP,
- * configura o gerenciamento de sessão, o encoder de senha,
- * o gerenciador de autenticação e adiciona o filtro de autenticação JWT.
+ * Define CORS, JWT, regras de autorização e demais filtros.
  */
 @Configuration
 @EnableWebSecurity
@@ -28,62 +31,69 @@ public class SecurityConfig {
     private final JwtTokenProvider jwtTokenProvider;
     private final UserDetailsServices userDetailsService;
 
-    /**
-     * Construtor para injetar as dependências necessárias.
-     *
-     * @param jwtTokenProvider   Componente responsável por gerar e validar tokens JWT.
-     * @param userDetailsService Serviço responsável por carregar os detalhes do usuário.
-     */
-    public SecurityConfig(JwtTokenProvider jwtTokenProvider, UserDetailsServices userDetailsService) {
-        this.jwtTokenProvider = jwtTokenProvider;
-        this.userDetailsService = userDetailsService;
+    public SecurityConfig(JwtTokenProvider jwtTokenProvider,
+                          UserDetailsServices userDetailsService) {
+        this.jwtTokenProvider    = jwtTokenProvider;
+        this.userDetailsService  = userDetailsService;
     }
 
-    /**
-     * Configura a cadeia de filtros de segurança para as requisições HTTP.
-     *
-     * @param http Objeto HttpSecurity para configurar as regras de segurança.
-     * @return O SecurityFilterChain construído.
-     * @throws Exception Em caso de erro durante a configuração.
-     */
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-            // Desabilita o CSRF (Cross-Site Request Forgery) para permitir requisições de diferentes domínios.
+            // Habilita CORS conforme CorsConfigurationSource abaixo
+            .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+            // Desabilita CSRF, pois usamos JWT
             .csrf(csrf -> csrf.disable())
-            // Configura o gerenciamento de sessão para ser stateless, pois a autenticação será baseada em JWT.
+            // Stateless: não mantemos sessão
             .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-            // Define as regras de autorização para as requisições HTTP.
+            // Definição de autorização por endpoint
             .authorizeHttpRequests(auth -> auth
-                // Permite acesso irrestrito ao endpoint de autenticação ("/api/auth/**").
+                // Permite acesso a todos os usuários
                 .requestMatchers("/api/auth/**").permitAll()
-                // Permite acesso ao endpoint "/api/poems" para usuários com as roles ROLE_USER ou ROLE_ADMIN.
+                // Permite acesso a todos os usuários, mas com autenticação
                 .requestMatchers("/api/poems/**").hasAnyRole("USER", "ADMIN")
-                // Permite acesso aos endpoints de profile para usuários com as roles ROLE_USER ou ROLE_ADMIN.
+                // Permite acesso a todos os usuários, mas com autenticação
                 .requestMatchers("/api/profile/**").hasAnyRole("USER", "ADMIN")
-                // Permite acesso aos endpoints "api/comments" para usuários com as roles ROLE_USER ou ROLE_ADMIN.
+                // Permite acesso a todos os usuários, mas com autenticação
                 .requestMatchers("/api/comments/**").hasAnyRole("USER", "ADMIN")
-                // Exige autenticação para qualquer outra requisição que não corresponda aos padrões anteriores.
+                // Permite acesso a todos os usuários, mas com autenticação
                 .anyRequest().authenticated()
             )
-            // Configura o serviço UserDetailsService para buscar os detalhes do usuário durante a autenticação.
+            // Usa nosso UserDetailsService para carregar usuários
             .userDetailsService(userDetailsService)
-            // Adiciona o filtro de autenticação JWT antes do filtro padrão de autenticação por nome de usuário e senha.
+            // Adiciona o filtro de JWT antes do filtro de autenticação padrão
             .addFilterBefore(
-                new JwtAuthenticationFilter(jwtTokenProvider, userDetailsService), // Filtro personalizado para autenticação JWT.
-                UsernamePasswordAuthenticationFilter.class // Filtro padrão do Spring Security para autenticação por username/password.
+                new JwtAuthenticationFilter(jwtTokenProvider, userDetailsService),
+                UsernamePasswordAuthenticationFilter.class
             );
 
         return http.build();
     }
 
     /**
-     * Cria e configura o AuthenticationManager.
-     * O AuthenticationManager é responsável por autenticar as credenciais do usuário.
-     *
-     * @param cfg Objeto AuthenticationConfiguration para obter o AuthenticationManager.
-     * @return O AuthenticationManager configurado.
-     * @throws Exception Em caso de erro ao obter o AuthenticationManager.
+     * Configura CORS para permitir chamadas do frontend em http://localhost:3000
+     */
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration config = new CorsConfiguration();
+        // Permite chamadas do frontend em http://localhost:3000
+        config.setAllowedOrigins(List.of("http://localhost:3000"));
+        // Permite chamadas de qualquer origem
+        config.setAllowedMethods(List.of("GET","POST","PUT","DELETE","OPTIONS"));
+        // Permite cabeçalhos de qualquer origem
+        config.setAllowedHeaders(List.of("*"));
+        // Permite credenciais (cookies, autenticação)
+        config.setAllowCredentials(true);
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        // Aplica CORS a todas as rotas
+        source.registerCorsConfiguration("/**", config);
+        return source;
+    }
+
+    /**
+     * Configura o AuthenticationManager para permitir a autenticação
+     * com o BCryptPasswordEncoder.
      */
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration cfg) throws Exception {
@@ -91,10 +101,8 @@ public class SecurityConfig {
     }
 
     /**
-     * Cria e configura o BCryptPasswordEncoder.
-     * O BCryptPasswordEncoder é utilizado para codificar as senhas dos usuários de forma segura.
-     *
-     * @return Uma instância do BCryptPasswordEncoder.
+     * Configura o BCryptPasswordEncoder para criptografar senhas.
+     * Usado no AuthenticationManager.
      */
     @Bean
     public BCryptPasswordEncoder passwordEncoder() {
