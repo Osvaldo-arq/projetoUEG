@@ -22,7 +22,6 @@ public class CommentService {
 
     private final CommentRepository commentRepo;
     private final PoemRepository poemRepo;
-    @SuppressWarnings("unused")
     private final UserRepository userRepository;
 
     /**
@@ -171,5 +170,13 @@ public class CommentService {
         Comment comment = commentRepo.findById(commentId)
                 .orElseThrow(() -> new IllegalArgumentException("Comentário não encontrado com id: " + commentId));
         return comment.getAuthor().equals(username);
+    }
+
+    /**
+     * Verifica UserRepository se o usuário com o nome de usuário fornecido é o autor do poema com o ID fornecido.
+     * Este método NÃO é executado em uma transação.
+     */
+    public UserRepository getUserRepository() {
+        return userRepository;
     }
 }
