@@ -1,96 +1,94 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';           // v6
-import AuthService from '../../application/AuthService';   // ajuste o caminho conforme seu projeto
+import React, { useState, useContext } from 'react';
+import { useNavigate } from 'react-router-dom';
+import AuthService from '../../application/AuthService';
+import { AuthContext } from '../../context/AuthContext';
 
 /**
- * Componente de formulário para login de usuários.
- * Este componente gerencia o estado das credenciais de login, exibe um formulário para o usuário
- * inserir seu nome de usuário e senha, realiza a autenticação através do serviço AuthService,
- * salva o token e role do usuário no localStorage e redireciona o usuário para a página
- * apropriada (dashboard do administrador ou do usuário comum) após o login bem-sucedido.
+ * Componente LoginForm:
+ *
+ * Este componente representa o formulário de login da aplicação. Ele permite que os usuários
+ * insiram suas credenciais (nome de usuário e senha) para autenticar e acessar a aplicação.
  */
 export default function LoginForm() {
-  // Define o estado para armazenar as credenciais do usuário (nome de usuário e senha).
+  // Declaração de estados:
+  // - credentials: Armazena o nome de usuário e senha digitados pelo usuário.
   const [credentials, setCredentials] = useState({ username: '', password: '' });
-  // Define o estado para armazenar mensagens de erro, se ocorrerem durante o login.
+  // - error: Armazena qualquer mensagem de erro que possa ocorrer durante o processo de login.
   const [error, setError] = useState(null);
-  // Define o estado para controlar se o formulário está em estado de carregamento (durante a autenticação).
+  // - loading: Indica se o formulário está em estado de carregamento (por exemplo, aguardando resposta do servidor).
   const [loading, setLoading] = useState(false);
-  // Inicializa o hook useNavigate do React Router para permitir a navegação entre páginas.
+
+  // Inicialização do hook useNavigate do React Router para permitir a navegação entre rotas.
   const navigate = useNavigate();
 
+  // Utilização do contexto de autenticação para acessar a função de login.
+  // O contexto AuthContext fornece a função login, que é responsável por atualizar o estado de autenticação global.
+  const { login } = useContext(AuthContext);
+
   /**
-   * Função para atualizar o estado das credenciais quando os campos do formulário são alterados.
-   * @param e O evento de mudança do campo do formulário.
+   * Função onChange:
+   *
+   * Atualiza o estado 'credentials' com os valores dos campos de entrada do formulário.
+   * Por exemplo, quando o usuário digita no campo "Usuário", esta função atualiza
+   * o valor de 'credentials.username'.  Além disso, limpa o estado de 'error'.
+   *
+   * @param e O evento de mudança do campo de entrada.
    */
   const onChange = (e) => {
-    // Atualiza o estado 'credentials' com o novo valor do campo.
-    // O nome do campo (username ou password) é usado como chave para atualizar o valor correto.
     setCredentials({ ...credentials, [e.target.name]: e.target.value });
-    setError(null); // Limpa qualquer erro anterior ao digitar nos campos.
+    setError(null); // Limpa o erro ao digitar.
   };
 
   /**
-   * Função assíncrona para lidar com o envio do formulário de login.
-   * Realiza a autenticação do usuário através do serviço AuthService e, em caso de sucesso,
-   * salva o token e role do usuário no localStorage e redireciona para a página apropriada.
+   * Função onSubmit:
+   *
+   * Lida com o envio do formulário de login.  Chama o serviço de autenticação,
+   * atualiza o estado de loading e, em caso de sucesso, chama a função login do contexto
+   * e navega para o dashboard do usuário. Em caso de erro, atualiza o estado de error.
+   *
    * @param e O evento de envio do formulário.
    */
   const onSubmit = async (e) => {
     e.preventDefault(); // Previne o comportamento padrão do formulário (recarregar a página).
-    setLoading(true); // Define o estado de carregamento como verdadeiro para exibir feedback ao usuário.
-    setError(null); // Limpa qualquer erro anterior.
+    setLoading(true);    // Define o estado de carregamento para true (exibe "Entrando...").
+    setError(null);      // Limpa qualquer erro anterior.
 
     try {
-      // Chama o serviço AuthService para realizar o login do usuário.
+      // Chama o serviço de autenticação (AuthService) para realizar o login.
+      // A função AuthService.login retorna uma Promise que resolve com os dados do usuário (incluindo token e role).
       const user = await AuthService.login(credentials.username, credentials.password);
-      // Salva o token JWT no localStorage para autenticação em requisições futuras.
-      localStorage.setItem('token', user.token);
-      // Salva o role do usuário no localStorage para determinar a página de redirecionamento.
-      localStorage.setItem('role', user.role);
-
-      // Redireciona o usuário para a página apropriada com base no seu role.
-      if (user.role === 'ADMIN') {
-        navigate('/admin/dashboard'); // Redireciona administradores para o dashboard do administrador.
-      } else {
-        navigate('/user/dashboard'); // Redireciona usuários comuns para o dashboard do usuário.
-      }
+      // Chama a função login do contexto de autenticação para atualizar o estado global de autenticação.
+      // Isso faz com que o componente AuthProvider (que envolve a aplicação) saiba que o usuário está logado.
+      login(user.token, user.role);
+      // Redireciona o usuário para a página de dashboard apropriada com base no seu role.
+      // Por exemplo, se o usuário for um "ADMIN", ele será redirecionado para "/admin/dashboard".
+      navigate(`/${user.role.toLowerCase()}/dashboard`, { replace: true }); // O replace: true substitui a página atual no histórico de navegação.
     } catch (err) {
-      // Captura erros durante o processo de login (por exemplo, credenciais inválidas).
-      setError(err.message); // Define a mensagem de erro a ser exibida.
+      // Captura qualquer erro que ocorra durante o processo de login (por exemplo, credenciais inválidas).
+      setError(err.message); // Atualiza o estado de erro com a mensagem de erro.
     } finally {
-      setLoading(false); // Define o estado de carregamento como falso após a conclusão do processo (sucesso ou falha).
+      setLoading(false);   // Define o estado de carregamento para false (remove "Entrando...").
     }
   };
 
-  // Renderiza o formulário de login.
+  // Renderização do componente:
   return (
     <form onSubmit={onSubmit}>
       <div>
         <label>Usuário:</label>
-        <input
-          name="username"
-          value={credentials.username}
-          onChange={onChange}
-          required // Campo obrigatório.
-        />
+        <input name="username" value={credentials.username} onChange={onChange} required />
       </div>
       <div>
         <label>Senha:</label>
-        <input
-          type="password"
-          name="password"
-          value={credentials.password}
-          onChange={onChange}
-          required // Campo obrigatório.
-        />
+        <input type="password" name="password" value={credentials.password} onChange={onChange} required />
       </div>
       {/* Exibe a mensagem de erro, se houver. */}
       {error && <div style={{ color: 'red' }}>{error}</div>}
-      {/* Botão de envio do formulário.  Desabilitado enquanto o formulário está carregando. */}
+      {/* Botão de envio do formulário.  O botão fica desabilitado enquanto o loading for true. */}
       <button type="submit" disabled={loading}>
-        {loading ? 'Entrando...' : 'Login'} {/* Exibe texto diferente durante o carregamento. */}
+        {loading ? 'Entrando...' : 'Login'} {/* Exibe "Entrando..." durante o carregamento. */}
       </button>
     </form>
   );
 }
+

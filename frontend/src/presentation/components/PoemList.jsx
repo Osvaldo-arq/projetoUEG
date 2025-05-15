@@ -11,7 +11,7 @@ export default function PoemList({ poems, onEdit, onDelete }) {
       <thead>
         <tr>
           {/* Cabeçalho da tabela com as colunas: ID, Título, Autor, Data e Ações. */}
-          <th>ID</th><th>Título</th><th>Autor</th><th>Data</th><th>Ações</th>
+          <th>ID</th><th>Título</th><th>Autor</th><th>Data</th> <th>Texto</th><th>Ações</th>
         </tr>
       </thead>
       <tbody>
@@ -23,6 +23,7 @@ export default function PoemList({ poems, onEdit, onDelete }) {
             <td>{p.title}</td>     {/* Exibe o título do poema. */}
             <td>{p.author}</td>    {/* Exibe o autor do poema. */}
             <td>{p.postDate}</td>  {/* Exibe a data de publicação do poema. */}
+            <td>{p.text}</td> {/* Exibe o texto do poema */}
             <td>
               {/* Coluna de ações com botões para editar e excluir o poema. */}
               <button onClick={() => onEdit(p)}>Editar</button>

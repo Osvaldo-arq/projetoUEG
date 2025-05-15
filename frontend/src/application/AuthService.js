@@ -2,46 +2,64 @@ import HttpClient from '../infrastructure/HttpClient';
 import { parseJwt } from '../infrastructure/jwt';
 import { User } from '../domain/User';
 
-const API = ''; // CRA proxy
+const API = '/api';
 
 const AuthService = {
   /**
-   * Registra um novo usuário.
-   * @param username Nome de usuário do usuário a ser registrado.
-   * @param email Email do usuário.
-   * @param password Senha do usuário.
-   * @returns Uma Promise que resolve com o token JWT retornado pela API.
-   */
-  register: async (username, email, password) => {
-    const payload = { username, email, password, confirmPassword: password, role: 'USER' };
-    console.log('AuthService.register →', payload); // Log da requisição de registro.
-    const res = await HttpClient.post(`${API}/api/auth/register`, payload); // Envia a requisição POST para registrar o usuário.
-    const token = await res.text(); // Extrai o token da resposta.
-    console.log('AuthService.register ← token', token); // Log do token recebido.
-    return token; // Retorna o token JWT.
-  },
-
-  /**
-   * Realiza o login do usuário.
-   * @param username Nome de usuário para login.
-   * @param password Senha para login.
-   * @returns Uma Promise que resolve com um objeto User contendo informações do usuário e o token.
+   * Realiza o login de um usuário.
+   * @param {string} username - O nome de usuário do usuário.
+   * @param {string} password - A senha do usuário.
+   * @returns {Promise<User>} - Uma Promise que resolve com um objeto User contendo informações do usuário e o token.
+   * @throws {Error} - Se o login falhar, lança um erro com a mensagem de erro da API ou uma mensagem padrão.
    */
   login: async (username, password) => {
     const payload = { username, password };
-    console.log('AuthService.login →', payload); // Log da requisição de login.
-    const res = await HttpClient.post(`${API}/api/auth/login`, payload); // Envia a requisição POST para o endpoint de login.
-    const token = await res.text(); // Obtém o token da resposta.
-    console.log('AuthService.login ← token', token); // Log do token recebido.
+    // Envia uma requisição POST para o endpoint de login da API.
+    const res = await HttpClient.post(`${API}/auth/login`, payload);
 
-    // Decodifica o role do próprio JWT
-    const claims = parseJwt(token); // Chama a função parseJwt para decodificar o token.
-    console.log('AuthService.login ← claims', claims); // Log dos claims (informações) do token decodificado.
-    const role = claims.role || 'USER'; // Obtém o role do token, ou usa 'USER' como padrão.
-    console.log('AuthService.login ← role', role); // Log do role do usuário.
+    // Verifica se a resposta da API indica sucesso (status 200-299).
+    if (!res.ok) {
+      // Se a resposta não for OK, obtém o texto do erro da resposta.
+      const errorText = await res.text();
+      // Lança um erro com a mensagem de erro da API ou uma mensagem padrão.
+      throw new Error(errorText || 'Falha no login');
+    }
 
-    return new User(username, token, role); // Retorna um novo objeto User com as informações.
+    // Se o login for bem-sucedido, obtém o token da resposta.
+    const token = await res.text();
+    // Decodifica o token JWT para obter os claims (informações) do usuário, incluindo o role.
+    const claims = parseJwt(token);
+    // Obtém o role do usuário dos claims, ou usa 'USER' como padrão se o role não estiver presente.
+    const role = claims.role || 'USER';
+
+    // Retorna um novo objeto User com o nome de usuário, token e role.
+    return new User(username, token, role);
+  },
+
+  /**
+   * Registra um novo usuário.
+   * @param {string} username - O nome de usuário do novo usuário.
+   * @param {string} email - O email do novo usuário.
+   * @param {string} password - A senha do novo usuário.
+   * @returns {Promise<string>} - Uma Promise que resolve com o token JWT retornado pela API.
+   * @throws {Error} - Se o registro falhar, lança um erro com a mensagem de erro da API ou uma mensagem padrão.
+   */
+  register: async (username, email, password) => {
+    const payload = { username, email, password, confirmPassword: password, role: 'USER' };
+    // Envia uma requisição POST para o endpoint de registro da API.
+    const res = await HttpClient.post(`${API}/auth/register`, payload);
+
+    // Verifica se a resposta da API indica sucesso (status 200-299).
+    if (!res.ok) {
+      // Se a resposta não for OK, obtém o texto do erro da resposta.
+      const errorText = await res.text();
+      // Lança um erro com a mensagem de erro da API ou uma mensagem padrão.
+      throw new Error(errorText || 'Falha no registro');
+    }
+
+    // Se o registro for bem-sucedido, obtém o token da resposta.
+    return res.text();
   },
 };
 
-export default AuthService; // Exporta o objeto AuthService para ser utilizado em outros módulos.
+export default AuthService;

@@ -5,11 +5,30 @@ package project.poem.application.dto;
  * Contém informações como nome de usuário, senha, confirmação de senha, email e role.
  */
 public class UserDto {
+    private Long id;
     private String username;
     private String password;
     private String confirmPassword;
     private String email;
     private String role;
+
+    /**
+     * Obtém o ID do usuário.
+     * 
+     * @return O ID do usuário.
+     */
+    public Long getId() {
+        return id;
+    }
+
+    /**
+     * Define o ID do usuário.
+     *
+     * @param id O ID do usuário a ser definido.
+     */
+    public void setId(Long id) {
+        this.id = id;
+    }
 
     /**
      * Obtém o nome de usuário.

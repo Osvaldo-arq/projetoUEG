@@ -1,55 +1,75 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-
-import LoginForm from './presentation/components/LoginForm';       
-import RegisterForm from './presentation/components/RegisterForm';     
-import DashboardUser from './presentation/pages/DashboardUser';     
-import DashboardAdmin from './presentation/pages/DashboardAdmin';   
+import { AuthContext } from './context/AuthContext';
+import LoginForm from './presentation/components/LoginForm';
+import RegisterForm from './presentation/components/RegisterForm';
+import DashboardUser from './presentation/pages/DashboardUser';
+import DashboardAdmin from './presentation/pages/DashboardAdmin';
 
 /**
- * Componente principal da aplicação.
- * Configura as rotas da aplicação usando React Router para navegação entre as páginas de login,
- * registro e dashboards de usuário e administrador.  A navegação é protegida com base na presença
- * do token de autenticação e no role do usuário armazenados no localStorage.
+ * App Component:
+ *
+ * This is the main component of the application, setting up the routing and authentication.
+ * It uses React Router to define the different pages and navigation guards.
  */
 export default function App() {
-  // Recupera o token de autenticação e o role do usuário do localStorage.
-  const token = localStorage.getItem('token');
-  const role = localStorage.getItem('role');
+  // Get user information from the authentication context.
+  const { user } = useContext(AuthContext);
+  const token = user?.token; // Get the authentication token.
+  const role = user?.role;   // Get the user's role.
 
-  // Configura as rotas da aplicação usando BrowserRouter e Routes.
+  // The BrowserRouter component enables the use of React Router's routing features.
   return (
     <BrowserRouter>
+      {/* Define the routes for the application. */}
       <Routes>
-        {/* Rota para a página de login. */}
+        {/* Public routes (accessible without authentication). */}
         <Route path="/login" element={<LoginForm />} />
-
-        {/* Rota para a página de registro. */}
         <Route path="/register" element={<RegisterForm />} />
 
-        {/* Rota para o dashboard.  Acesso condicional com base no token e role. */}
+        {/* Protected routes (accessible only with authentication). */}
         <Route
-          path="/dashboard"
+          path="/admin/dashboard"
           element={
-            token // Se o token existir, o usuário está autenticado.
-              ? role === 'ADMIN' // Se o role for 'ADMIN', renderiza o DashboardAdmin.
-                ? <DashboardAdmin />
-                : <DashboardUser /> // Caso contrário, renderiza o DashboardUser.
-              : <Navigate to="/login" replace /> // Se não houver token, redireciona para a página de login.
+            // Only allow access if the user has a token and the role is 'ADMIN'.
+            token && role === 'ADMIN' ? (
+              <DashboardAdmin />
+            ) : (
+              // Otherwise, redirect to the login page.  The 'replace' prop
+              //  replaces the current entry in the history stack, so the user
+              //  can't go back to the protected page by pressing the back button.
+              <Navigate to="/login" replace />
+            )
+          }
+        />
+        <Route
+          path="/user/dashboard"
+          element={
+            // Only allow access if the user has a token and the role is 'USER'.
+            token && role === 'USER' ? (
+              <DashboardUser />
+            ) : (
+              // Otherwise, redirect to the login page.
+              <Navigate to="/login" replace />
+            )
           }
         />
 
-        {/* Rota para a raiz da aplicação.  Redireciona para /login ou /dashboard conforme o token. */}
+        {/* Redirect routes. */}
         <Route
           path="/"
           element={
-            token
-              ? <Navigate to="/dashboard" replace /> // Se o usuário estiver autenticado, redireciona para o dashboard.
-              : <Navigate to="/login" replace />     // Caso contrário, redireciona para o login.
+            // If the user is authenticated (has a token), redirect them to
+            //  their dashboard based on their role.  If not, redirect to login.
+            token ? (
+              <Navigate to={`/${role.toLowerCase()}/dashboard`} replace />
+            ) : (
+              <Navigate to="/login" replace />
+            )
           }
         />
-
-        {/* Rota para qualquer caminho não definido nas rotas anteriores.  Redireciona para a raiz. */}
+        {/* Catch-all route:  If the user tries to access a non-existent page,
+            redirect them to the home page ("/"). */}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </BrowserRouter>
