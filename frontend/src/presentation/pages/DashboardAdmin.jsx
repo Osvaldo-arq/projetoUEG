@@ -1,133 +1,133 @@
 import React, { useState, useEffect } from 'react';
 
-import PoemService from '../../application/PoemService';
-import PoemList from '../components/PoemList';
-import PoemForm from '../components/PoemForm';
+import PoemService from '../../application/PoemService';       // Importa o serviço para manipulação de poemas.
+import PoemList from '../components/PoemList';         // Importa o componente para exibir a lista de poemas.
+import PoemForm from '../components/PoemForm';         // Importa o componente para o formulário de poema.
 
-import ProfileService from '../../application/ProfileService';
-import ProfileList from '../components/ProfileList';
-import ProfileForm from '../components/ProfileForm';
+import ProfileService from '../../application/ProfileService'; // Importa o serviço para manipulação de perfis.
+import ProfileList from '../components/ProfileList';       // Importa o componente para exibir a lista de perfis.
+import ProfileForm from '../components/ProfileForm';       // Importa o componente para o formulário de perfil.
 
 
 /**
  * DashboardAdmin Component:
  *
- * This component represents the admin dashboard, providing functionality to manage poems and profiles.
- * It includes a sidebar for navigation and a main content area for displaying and managing data.
+ * Este componente representa o painel de administração, fornecendo funcionalidades para gerenciar poemas e perfis.
+ * Ele inclui uma barra lateral para navegação e uma área de conteúdo principal para exibir e gerenciar dados.
  */
 export default function DashboardAdmin() {
-  // State variables:
-  const [section, setSection] = useState('poems');       // Controls which section is displayed ('poems', 'profiles', 'users').
-  const [error, setError] = useState(null);           // Stores any error messages.
+  // Variáveis de estado:
+  const [section, setSection] = useState('poems');       // Controla qual seção é exibida ('poems', 'profiles', 'users').
+  const [error, setError] = useState(null);           // Armazena quaisquer mensagens de erro.
 
-  // Poem-related state:
-  const [poems, setPoems] = useState([]);             // Stores the list of poems.
-  const [editingPoem, setEditingPoem] = useState(null); // Stores the poem being edited.
-  const [showPoemForm, setShowPoemForm] = useState(false); // Controls the visibility of the poem form.
+  // Estado relacionado a poemas:
+  const [poems, setPoems] = useState([]);             // Armazena a lista de poemas.
+  const [editingPoem, setEditingPoem] = useState(null); // Armazena o poema que está sendo editado.
+  const [showPoemForm, setShowPoemForm] = useState(false); // Controla a visibilidade do formulário de poema.
 
-  // Profile-related state:
-  const [profiles, setProfiles] = useState([]);         // Stores the list of profiles.
-  const [editingProfile, setEditingProfile] = useState(null); // Stores the profile being edited.
-  const [showProfileForm, setShowProfileForm] = useState(false); // Controls the visibility of the profile form.
+  // Estado relacionado a perfis:
+  const [profiles, setProfiles] = useState([]);         // Armazena a lista de perfis.
+  const [editingProfile, setEditingProfile] = useState(null); // Armazena o perfil que está sendo editado.
+  const [showProfileForm, setShowProfileForm] = useState(false); // Controla a visibilidade do formulário de perfil.
 
 
   /**
    * useEffect Hook:
    *
-   * This hook is used to load initial data when the component mounts.  It calls loadPoems and loadProfiles.
+   * Este hook é usado para carregar os dados iniciais quando o componente é montado. Ele chama loadPoems e loadProfiles.
    *
-   * Dependencies: [] - This effect runs only once, when the component is mounted.
+   * Dependências: [] - Este efeito é executado apenas uma vez, quando o componente é montado.
    */
   useEffect(() => {
-    loadPoems();    // Load poems on component mount.
-    loadProfiles(); // Load profiles on component mount.
+    loadPoems();    // Carrega os poemas quando o componente é montado.
+    loadProfiles(); // Carrega os perfis quando o componente é montado.
   }, []);
 
   /**
    * loadPoems Function:
    *
-   * Fetches the list of poems from the PoemService and updates the 'poems' state.
-   * Handles errors and updates the 'error' state if necessary.
+   * Busca a lista de poemas do PoemService e atualiza o estado 'poems'.
+   * Trata erros e atualiza o estado 'error' se necessário.
    */
   const loadPoems = async () => {
     try {
-      setPoems(await PoemService.listAll()); // Fetch poems and update state.
+      setPoems(await PoemService.listAll()); // Busca os poemas e atualiza o estado.
     } catch (e) {
-      setError(e.message); // Store error message.
+      setError(e.message); // Armazena a mensagem de erro.
     }
   };
 
   /**
    * loadProfiles Function:
    *
-   * Fetches the list of profiles from the ProfileService and updates the 'profiles' state.
-   * Handles errors and updates the 'error' state if necessary.
+   * Busca a lista de perfis do ProfileService e atualiza o estado 'profiles'.
+   * Trata erros e atualiza o estado 'error' se necessário.
    */
   const loadProfiles = async () => {
     try {
-      setProfiles(await ProfileService.listAll()); // Fetch profiles and update state.
+      setProfiles(await ProfileService.listAll()); // Busca os perfis e atualiza o estado.
     } catch (e) {
-      setError(e.message); // Store error message.
+      setError(e.message); // Armazena a mensagem de erro.
     }
   };
 
 
-  // Poem Handlers:
+  // Handlers de Poemas:
   /**
    * handlePoemSubmit Function:
    *
-   * Handles the submission of the poem form (both create and update).  It calls the appropriate PoemService
-   * method (create or update) and then reloads the poem list.  It also resets the form state.
+   * Lida com o envio do formulário de poema (tanto criar quanto atualizar). Ele chama o método apropriado do PoemService
+   * (create ou update) e então recarrega a lista de poemas. Ele também reseta o estado do formulário.
    *
-   * @param poem The poem data from the form.
+   * @param poem Os dados do poema do formulário.
    */
   const handlePoemSubmit = async (poem) => {
     try {
       if (editingPoem) {
-        await PoemService.update(editingPoem.id, poem); // Update existing poem.
+        await PoemService.update(editingPoem.id, poem); // Atualiza o poema existente.
       } else {
-        await PoemService.create(poem);            // Create a new poem.
+        await PoemService.create(poem);            // Cria um novo poema.
       }
-      setShowPoemForm(false);    // Hide the form after submission.
-      setEditingPoem(null);     // Reset editing state.
-      loadPoems();             // Reload the poem list.
+      setShowPoemForm(false);    // Oculta o formulário após o envio.
+      setEditingPoem(null);     // Reseta o estado de edição.
+      loadPoems();             // Recarrega a lista de poemas.
     } catch (e) {
-      setError(e.message); // Store error message.
+      setError(e.message); // Armazena a mensagem de erro.
     }
   };
 
   /**
    * handlePoemDelete Function:
    *
-   * Handles the deletion of a poem by its ID.  It calls the PoemService.deleteById method and
-   * then reloads the poem list.  It also handles errors.
+   * Lida com a exclusão de um poema pelo seu ID. Ele chama o método PoemService.deleteById e
+   * então recarrega a lista de poemas. Ele também trata erros.
    *
-   * @param id The ID of the poem to delete.
+   * @param id O ID do poema a ser excluído.
    */
   const handlePoemDelete = async (id) => {
     try {
-      await PoemService.deleteById(id); // Delete the poem.
-      loadPoems();                 // Reload the poem list.
+      await PoemService.deleteById(id); // Exclui o poema.
+      loadPoems();                 // Recarrega a lista de poemas.
     } catch (e) {
-      setError(e.message); // Store error message.
+      setError(e.message); // Armazena a mensagem de erro.
     }
   };
 
-  // Profile Handlers:
-    /**
+  // Handlers de Perfil:
+  /**
    * handleProfileSubmit Function:
    *
-   * Handles the submission of the profile form.  It calls the ProfileService.create method
-   * and then reloads the profile list.  It also resets the form state.
+   * Lida com o envio do formulário de perfil. Ele chama o método ProfileService.create
+   * e então recarrega a lista de perfis. Ele também reseta o estado do formulário.
    *
-   * @param profile The profile data from the form.
+   * @param profile Os dados do perfil do formulário.
    */
   const handleProfileSubmit = async (profile) => {
     try {
-      await ProfileService.create(profile); // Create new profile
-      setShowProfileForm(false);   // Hide form
-      setEditingProfile(null);    // Reset editing state
-      loadProfiles();            // Reload profile list
+      await ProfileService.create(profile); // Cria um novo perfil
+      setShowProfileForm(false);   // Oculta o formulário
+      setEditingProfile(null);    // Reseta o estado de edição
+      loadProfiles();            // Recarrega a lista de perfis
     } catch (e) {
       setError(e.message);
     }
@@ -136,51 +136,51 @@ export default function DashboardAdmin() {
   /**
    * handleProfileDelete Function:
    *
-   * Handles the deletion of a profile by its email. It calls the ProfileService.deleteByEmail method and
-   * then reloads the profile list.
+   * Lida com a exclusão de um perfil pelo seu email. Ele chama o método ProfileService.deleteByEmail e
+   * então recarrega a lista de perfis.
    *
-   * @param email The email of the profile to delete.
+   * @param email O email do perfil a ser excluído.
    */
   const handleProfileDelete = async (email) => {
     try {
-      await ProfileService.deleteByEmail(email);  // Delete profile by email
-      loadProfiles();                     // Load profiles
+      await ProfileService.deleteByEmail(email);  // Exclui o perfil pelo email
+      loadProfiles();                     // Carrega os perfis
     } catch (e) {
       setError(e.message);
     }
   };
 
-  // Logout Handler:
+  // Handler de Logout:
   /**
    * handleLogout Function:
    *
-   * Handles user logout.  It removes the authentication token from localStorage and redirects the user
-   * to the login page.
+   * Lida com o logout do usuário. Ele remove o token de autenticação do localStorage e redireciona o usuário
+   * para a página de login.
    */
   const handleLogout = () => {
-    localStorage.removeItem('token'); // Remove token
-    window.location.href = '/login';  // Redirect to login page
+    localStorage.removeItem('token'); // Remove o token
+    window.location.href = '/login';  // Redireciona para a página de login
   };
 
-  // Render the component:
+  // Renderiza o componente:
   return (
     <div style={{ display: 'flex', height: '100vh' }}>
-      {/* Sidebar */}
+      {/* Barra Lateral */}
       <aside style={{
-        width: '220px',             // Fixed width for the sidebar.
-        background: '#f0f0f0',      // Light gray background.
-        padding: '1rem',           // Padding inside the sidebar.
-        display: 'flex',          // Use flexbox for layout.
-        flexDirection: 'column'    // Stack items vertically.
+        width: '220px',             // Largura fixa para a barra lateral.
+        background: '#f0f0f0',      // Fundo cinza claro.
+        padding: '1rem',           // Preenchimento dentro da barra lateral.
+        display: 'flex',          // Usa flexbox para o layout.
+        flexDirection: 'column'    // Empilha os itens verticalmente.
       }}>
         <h2>Admin</h2>
         <nav style={{
-          display: 'flex',          // Use flexbox for navigation items.
-          flexDirection: 'column',    // Stack navigation items vertically.
-          gap: '0.5rem',         // Space between navigation items.
-          marginTop: '1rem'         // Space above the navigation.
+          display: 'flex',          // Usa flexbox para os itens de navegação.
+          flexDirection: 'column',    // Empilha os itens de navegação verticalmente.
+          gap: '0.5rem',         // Espaço entre os itens de navegação.
+          marginTop: '1rem'         // Espaço acima da navegação.
         }}>
-          {/* Buttons to switch between sections. */}
+          {/* Botões para alternar entre as seções. */}
           <button onClick={() => setSection('poems')} style={{ textAlign: 'left' }}>
             Gerenciar Poemas
           </button>
@@ -191,46 +191,46 @@ export default function DashboardAdmin() {
             Gerenciar Usuários
           </button>
         </nav>
-        {/* Logout button, positioned at the bottom of the sidebar. */}
+        {/* Botão de Logout, posicionado na parte inferior da barra lateral. */}
         <button
           onClick={handleLogout}
           style={{
-            marginTop: 'auto',        // Push button to the bottom.
-            background: '#d9534f', // Red background.
-            color: '#fff',         // White text.
-            padding: '0.5rem',       // Padding inside the button.
-            width: '100%'          // Full width of the sidebar.
+            marginTop: 'auto',        // Empurra o botão para a parte inferior.
+            background: '#d9534f', // Fundo vermelho.
+            color: '#fff',         // Texto branco.
+            padding: '0.5rem',       // Preenchimento dentro do botão.
+            width: '100%'          // Largura total da barra lateral.
           }}
         >
           Logout
         </button>
       </aside>
 
-      {/* Main Content Area */}
+      {/* Área de Conteúdo Principal */}
       <main style={{ flex: 1, padding: '2rem', overflowY: 'auto' }}>
         <h1>Dashboard Admin</h1>
 
-        {/* Conditional rendering of sections. */}
+        {/* Renderização condicional das seções. */}
         {section === 'poems' && (
           <section>
             <h2>Gerenciar Poemas</h2>
-            {/* Button to show the poem form for creating a new poem. */}
+            {/* Botão para exibir o formulário de poema para criar um novo poema. */}
             <button onClick={() => { setShowPoemForm(true); setEditingPoem(null); }}>
               Novo Poema
             </button>
-            {/* Render the poem form if showPoemForm is true. */}
+            {/* Renderiza o formulário de poema se showPoemForm for verdadeiro. */}
             {showPoemForm && (
               <PoemForm
-                poem={editingPoem}        // Pass the poem being edited (null for new).
-                onSubmit={handlePoemSubmit} // Pass the submit handler.
-                onCancel={() => { setShowPoemForm(false); setEditingPoem(null); }} // Pass the cancel handler.
+                poem={editingPoem}        // Passa o poema que está sendo editado (null para novo).
+                onSubmit={handlePoemSubmit} // Passa o manipulador de envio.
+                onCancel={() => { setShowPoemForm(false); setEditingPoem(null); }} // Passa o manipulador de cancelamento.
               />
             )}
-            {/* Render the poem list. */}
+            {/* Renderiza a lista de poemas. */}
             <PoemList
-              poems={poems}             // Pass the list of poems.
-              onEdit={p => { setEditingPoem(p); setShowPoemForm(true); }} // Pass the edit handler.
-              onDelete={handlePoemDelete} // Pass the delete handler.
+              poems={poems}             // Passa a lista de poemas.
+              onEdit={p => { setEditingPoem(p); setShowPoemForm(true); }} // Passa o manipulador de edição.
+              onDelete={handlePoemDelete} // Passa o manipulador de exclusão.
             />
           </section>
         )}
@@ -238,11 +238,11 @@ export default function DashboardAdmin() {
         {section === 'profiles' && (
           <section>
             <h2>Gerenciar Perfis</h2>
-            {/* Button to show the profile form */}
+            {/* Botão para exibir o formulário de perfil */}
             <button onClick={() => { setShowProfileForm(true); setEditingProfile(null); }}>
               Novo Perfil
             </button>
-            {/* Show profile form if showProfileForm is true */}
+            {/* Exibe o formulário de perfil se showProfileForm for verdadeiro */}
             {showProfileForm && (
               <ProfileForm
                 profile={editingProfile}
@@ -250,7 +250,7 @@ export default function DashboardAdmin() {
                 onCancel={() => { setShowProfileForm(false); setEditingProfile(null); }}
               />
             )}
-            {/* Render the profile list */}
+            {/* Renderiza a lista de perfis */}
             <ProfileList
               profiles={profiles}
               onEdit={p => { setEditingProfile(p); setShowProfileForm(true); }}
@@ -259,7 +259,7 @@ export default function DashboardAdmin() {
           </section>
         )}
 
-        {/* Display any errors. */}
+        {/* Exibe quaisquer erros. */}
         {error && <p style={{ color: 'red' }}>Erro: {error}</p>}
       </main>
     </div>

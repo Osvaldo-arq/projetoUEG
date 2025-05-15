@@ -9,35 +9,35 @@ import DashboardAdmin from './presentation/pages/DashboardAdmin';
 /**
  * App Component:
  *
- * This is the main component of the application, setting up the routing and authentication.
- * It uses React Router to define the different pages and navigation guards.
+ * Este é o componente principal da aplicação, que configura o roteamento e a autenticação.
+ * Ele usa o React Router para definir as diferentes páginas e guardas de navegação.
  */
 export default function App() {
-  // Get user information from the authentication context.
+  // Obtém informações do usuário do contexto de autenticação.
   const { user } = useContext(AuthContext);
-  const token = user?.token; // Get the authentication token.
-  const role = user?.role;   // Get the user's role.
+  const token = user?.token; // Obtém o token de autenticação.
+  const role = user?.role;   // Obtém o papel do usuário.
 
-  // The BrowserRouter component enables the use of React Router's routing features.
+  // O componente BrowserRouter habilita o uso dos recursos de roteamento do React Router.
   return (
     <BrowserRouter>
-      {/* Define the routes for the application. */}
+      {/* Define as rotas para a aplicação. */}
       <Routes>
-        {/* Public routes (accessible without authentication). */}
+        {/* Rotas públicas (acessíveis sem autenticação). */}
         <Route path="/login" element={<LoginForm />} />
         <Route path="/register" element={<RegisterForm />} />
 
-        {/* Protected routes (accessible only with authentication). */}
+        {/* Rotas protegidas (acessíveis apenas com autenticação). */}
         <Route
           path="/admin/dashboard"
           element={
-            // Only allow access if the user has a token and the role is 'ADMIN'.
+            // Só permite acesso se o usuário tiver um token e o papel for 'ADMIN'.
             token && role === 'ADMIN' ? (
               <DashboardAdmin />
             ) : (
-              // Otherwise, redirect to the login page.  The 'replace' prop
-              //  replaces the current entry in the history stack, so the user
-              //  can't go back to the protected page by pressing the back button.
+              // Caso contrário, redireciona para a página de login. A prop 'replace'
+              // substitui a entrada atual no histórico, para que o usuário não possa
+              // voltar para a página protegida pressionando o botão de voltar.
               <Navigate to="/login" replace />
             )
           }
@@ -45,22 +45,22 @@ export default function App() {
         <Route
           path="/user/dashboard"
           element={
-            // Only allow access if the user has a token and the role is 'USER'.
+            // Só permite acesso se o usuário tiver um token e o papel for 'USER'.
             token && role === 'USER' ? (
               <DashboardUser />
             ) : (
-              // Otherwise, redirect to the login page.
+              // Caso contrário, redireciona para a página de login.
               <Navigate to="/login" replace />
             )
           }
         />
 
-        {/* Redirect routes. */}
+        {/* Rotas de redirecionamento. */}
         <Route
           path="/"
           element={
-            // If the user is authenticated (has a token), redirect them to
-            //  their dashboard based on their role.  If not, redirect to login.
+            // Se o usuário estiver autenticado (tiver um token), redireciona para
+            // o painel com base em seu papel. Se não, redireciona para o login.
             token ? (
               <Navigate to={`/${role.toLowerCase()}/dashboard`} replace />
             ) : (
@@ -68,8 +68,8 @@ export default function App() {
             )
           }
         />
-        {/* Catch-all route:  If the user tries to access a non-existent page,
-            redirect them to the home page ("/"). */}
+        {/* Rota curinga: se o usuário tentar acessar uma página inexistente,
+            redireciona para a página inicial ("/"). */}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </BrowserRouter>

@@ -3,41 +3,41 @@ import React from 'react';
 /**
  * ProfileList Component:
  *
- * This component displays a table of user profiles.  It receives an array of profile objects
- * as a prop and renders each profile in a table row.  It also provides "Editar" and "Excluir"
- * buttons for each profile, which call callback functions passed as props.
+ * Este componente exibe uma tabela de perfis de usuário. Ele recebe um array de objetos de perfil
+ * como uma prop e renderiza cada perfil em uma linha da tabela. Ele também fornece botões "Editar" e "Excluir"
+ * para cada perfil, que chamam funções de callback passadas como props.
  */
 export default function ProfileList({ profiles, onEdit, onDelete }) {
-  // Render the table:
+  // Renderiza a tabela:
   return (
     <table border="1" cellPadding="5" style={{ width: '100%', marginBottom: '2rem' }}>
       <thead>
         <tr>
-          <th>First Name</th>
-          <th>Last Name</th>
-          <th>Phone</th>
+          <th>Nome</th>
+          <th>Sobrenome</th>
+          <th>Telefone</th>
           <th>Email</th>
           <th>Ações</th>
         </tr>
       </thead>
       <tbody>
-        {/* Map over the 'profiles' array to render a table row for each profile. */}
+        {/* Mapeia o array 'profiles' para renderizar uma linha da tabela para cada perfil. */}
         {profiles.map((p) => (
-          <tr key={p.userEmail}> {/* Use userEmail as the key, assuming it's unique. */}
+          <tr key={p.userEmail}> {/* Usa userEmail como a chave, assumindo que é único. */}
             <td>{p.firstName}</td>
             <td>{p.lastName}</td>
             <td>{p.phone}</td>
             <td>{p.userEmail}</td>
             <td>
-              {/* Button to edit the profile. */}
+              {/* Botão para editar o perfil. */}
               <button
-                onClick={() => onEdit(p)} // Calls the 'onEdit' callback with the profile data when clicked.
-                style={{ marginRight: '0.5rem' }} // Adds some right margin for spacing.
+                onClick={() => onEdit(p)} // Chama o callback 'onEdit' com os dados do perfil quando clicado.
+                style={{ marginRight: '0.5rem' }} // Adiciona uma margem direita para espaçamento.
               >
                 Editar
               </button>
-              {/* Button to delete the profile. */}
-              <button onClick={() => onDelete(p.userEmail)}>Excluir</button>  {/* Calls the 'onDelete' callback with the userEmail when clicked. */}
+              {/* Botão para excluir o perfil. */}
+              <button onClick={() => onDelete(p.userEmail)}>Excluir</button>  {/* Chama o callback 'onDelete' com o userEmail quando clicado. */}
             </td>
           </tr>
         ))}

@@ -3,18 +3,24 @@ import ReactDOM from 'react-dom/client';
 import App from './App';
 import { AuthProvider } from './context/AuthContext';
 
-// Get a reference to the root DOM node where the React application will be mounted.
+// Obtém uma referência ao nó DOM onde a aplicação React será montada.
 const root = ReactDOM.createRoot(document.getElementById('root'));
 
-// Render the React application into the root DOM node.
+// Renderiza a aplicação React dentro do nó DOM raiz.
 root.render(
-  // React.StrictMode is a tool for highlighting potential problems in your application.
-  //  It helps you spot common bugs in your components early in development.
+  // React.StrictMode é uma ferramenta para destacar problemas potenciais na sua aplicação durante o desenvolvimento.
+  // Ajuda a detetar erros comuns nos seus componentes mais cedo.
   <React.StrictMode>
-    {/* AuthProvider is a component that provides authentication context to the application.
-        Any component within AuthProvider can access the authentication data and functions. */}
+    {/*
+      AuthProvider é um componente que disponibiliza o contexto de autenticação para a aplicação.
+      Qualquer componente dentro de AuthProvider pode aceder aos dados e funções de autenticação,
+      como o utilizador autenticado e funções de login/logout.
+    */}
     <AuthProvider>
-      {/* The main App component, which contains the application's logic and UI. */}
+      {/*
+        App é o componente principal da aplicação, contendo a lógica e a interface do utilizador.
+        Geralmente, é aqui que a estrutura da aplicação, a navegação e o roteamento são definidos.
+      */}
       <App />
     </AuthProvider>
   </React.StrictMode>

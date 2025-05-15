@@ -3,13 +3,13 @@ import React, { useState, useEffect } from 'react';
 /**
  * ProfileForm Component:
  *
- * This component renders a form for creating or editing user profile information.  It receives
- * initial profile data as a prop and provides input fields for first name, last name, phone,
- * and user email.  It uses state to manage the form values and calls callback functions
- * for saving or canceling the form submission.
+ * Este componente renderiza um formulário para criar ou editar informações de perfil de usuário. Ele recebe
+ * dados de perfil iniciais como uma prop e fornece campos de entrada para nome, sobrenome, telefone
+ * e email do usuário. Ele usa o estado para gerenciar os valores do formulário e chama funções de callback
+ * para salvar ou cancelar o envio do formulário.
  */
 export default function ProfileForm({ profile, onSubmit, onCancel }) {
-  // Declare state variables for each form field, initialized with empty strings.
+  // Declara variáveis de estado para cada campo do formulário, inicializadas com strings vazias.
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [phone, setPhone] = useState('');
@@ -18,11 +18,11 @@ export default function ProfileForm({ profile, onSubmit, onCancel }) {
   /**
    * useEffect Hook:
    *
-   * This hook is responsible for updating the form's state when the 'profile' prop changes.
-   * If a 'profile' object is passed to the component (meaning we are editing an existing profile),
-   * the hook updates the corresponding state variables with the values from the profile object.
+   * Este hook é responsável por atualizar o estado do formulário quando a prop 'profile' muda.
+   * Se um objeto 'profile' é passado para o componente (significando que estamos editando um perfil existente),
+   * o hook atualiza as variáveis de estado correspondentes com os valores do objeto profile.
    *
-   * Dependencies: [profile] - This effect will run whenever the 'profile' prop changes.
+   * Dependências: [profile] - Este efeito será executado sempre que a prop 'profile' mudar.
    */
   useEffect(() => {
     if (profile) {
@@ -36,54 +36,54 @@ export default function ProfileForm({ profile, onSubmit, onCancel }) {
   /**
    * handleSubmit Function:
    *
-   * This function is called when the form is submitted.  It prevents the default form submission
-   * behavior (which would cause a page reload) and calls the 'onSubmit' callback function
-   * passed as a prop, providing it with an object containing the current form values.
+   * Esta função é chamada quando o formulário é enviado. Ela previne o comportamento padrão de envio do formulário
+   * (que causaria um recarregamento da página) e chama a função de callback 'onSubmit'
+   * passada como uma prop, fornecendo a ela um objeto contendo os valores atuais do formulário.
    *
-   * @param e The submit event object.
+   * @param e O objeto de evento de envio.
    */
   const handleSubmit = (e) => {
-    e.preventDefault(); // Prevents the default form submission behavior.
-    onSubmit({ firstName, lastName, phone, userEmail }); // Calls the onSubmit callback with form data.
+    e.preventDefault(); // Previne o comportamento padrão de envio do formulário.
+    onSubmit({ firstName, lastName, phone, userEmail }); // Chama o callback onSubmit com os dados do formulário.
   };
 
-  // Render the form:
+  // Renderiza o formulário:
   return (
     <form onSubmit={handleSubmit} style={{ marginBottom: '1rem' }}>
       <div>
-        <label>First Name: </label>
+        <label>Nome: </label>
         <input
           value={firstName}
-          onChange={(e) => setFirstName(e.target.value)} // Updates firstName state when input changes.
-          required // Makes this field required.
+          onChange={(e) => setFirstName(e.target.value)} // Atualiza o estado firstName quando a entrada muda.
+          required // Torna este campo obrigatório.
         />
       </div>
       <div>
-        <label>Last Name: </label>
+        <label>Sobrenome: </label>
         <input
           value={lastName}
-          onChange={(e) => setLastName(e.target.value)} // Updates lastName state when input changes.
-          required // Makes this field required.
+          onChange={(e) => setLastName(e.target.value)} // Atualiza o estado lastName quando a entrada muda.
+          required // Torna este campo obrigatório.
         />
       </div>
       <div>
-        <label>Phone: </label>
+        <label>Telefone: </label>
         <input
           value={phone}
-          onChange={(e) => setPhone(e.target.value)} // Updates phone state when input changes.
-          required // Makes this field required.
+          onChange={(e) => setPhone(e.target.value)} // Atualiza o estado phone quando a entrada muda.
+          required // Torna este campo obrigatório.
         />
       </div>
       <div>
-        <label>User Email: </label>
+        <label>Email: </label>
         <input
-          type="email" // Sets input type to email for validation and better UI.
+          type="email" // Define o tipo de entrada como email para validação e melhor UI.
           value={userEmail}
-          onChange={(e) => setUserEmail(e.target.value)} // Updates userEmail state when input changes.
-          required // Makes this field required.
+          onChange={(e) => setUserEmail(e.target.value)} // Atualiza o estado userEmail quando a entrada muda.
+          required // Torna este campo obrigatório.
         />
       </div>
-      {/* Buttons for saving or canceling the form. */}
+      {/* Botões para salvar ou cancelar o formulário. */}
       <button type="submit" style={{ marginRight: '0.5rem' }}>
         Salvar
       </button>
