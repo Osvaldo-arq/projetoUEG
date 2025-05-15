@@ -1,0 +1,98 @@
+.poemListContainer {
+  overflow-x: auto; /* Para responsividade em telas menores */
+}
+
+.poemListTable {
+  width: 100%;
+  margin-bottom: 2rem;
+  border-collapse: collapse;
+  border: 1px solid #e0e0e0;
+  background-color: #fff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05); /* Sombra suave */
+  font-size: 0.9rem; /* Tamanho da fonte base */
+}
+
+.poemListTable th,
+.poemListTable td {
+  padding: 0.75rem 1rem;
+  text-align: left;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.poemListTable th {
+  background-color: #f9f9f9;
+  font-weight: 500;
+  color: #333;
+  text-transform: uppercase; /* Opcional: cabeçalho em maiúsculas */
+}
+
+.poemListTable tbody tr:hover {
+  background-color: #f5f5f5; /* Feedback sutil ao passar o mouse */
+  transition: background-color 0.2s ease-in-out;
+}
+
+.poemListTable td:last-child {
+  text-align: center; /* Centraliza os botões de ação */
+}
+
+.poemListTable button {
+  padding: 0.5rem 0.75rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  background-color: #fff;
+  color: #333;
+  transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out, border-color 0.2s ease-in-out;
+  margin-left: 0.25rem;
+}
+
+.poemListTable button:first-child {
+  margin-left: 0;
+}
+
+.poemListTable button:hover {
+  background-color: #e0e0e0;
+  border-color: #b3b3b3;
+  color: #000;
+}
+
+.poemListTable button:nth-child(1) { /* Estilo específico para "Editar" */
+  color: #007bff;
+  border-color: #007bff;
+}
+
+.poemListTable button:nth-child(1):hover {
+  background-color: rgba(0, 123, 255, 0.1);
+}
+
+.poemListTable button:nth-child(2) { /* Estilo específico para "Excluir" */
+  color: #dc3545;
+  border-color: #dc3545;
+}
+
+.poemListTable button:nth-child(2):hover {
+  background-color: rgba(220, 53, 69, 0.1);
+}
+
+/* Estilos para telas menores */
+@media (max-width: 768px) {
+  .poemListTable th,
+  .poemListTable td {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.8rem;
+  }
+
+  .poemListTable button {
+    padding: 0.4rem 0.6rem;
+    font-size: 0.75rem;
+    margin-left: 0.2rem;
+  }
+}
+
+@media (max-width: 600px) {
+  .poemListTable th:nth-child(n+4), /* Oculta colunas a partir da quarta em telas menores */
+  .poemListTable td:nth-child(n+4) {
+    display: none;
+  }
+}

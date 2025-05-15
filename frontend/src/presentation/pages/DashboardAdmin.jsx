@@ -7,7 +7,7 @@ import PoemForm from '../components/PoemForm';         // Importa o componente p
 import ProfileService from '../../application/ProfileService'; // Importa o serviço para manipulação de perfis.
 import ProfileList from '../components/ProfileList';       // Importa o componente para exibir a lista de perfis.
 import ProfileForm from '../components/ProfileForm';       // Importa o componente para o formulário de perfil.
-
+import styles from '../../styles/DashboardAdmin.module.css'; // Importa os estilos para o DashboardAdmin.
 
 /**
  * DashboardAdmin Component:
@@ -164,85 +164,51 @@ export default function DashboardAdmin() {
 
   // Renderiza o componente:
   return (
-    <div style={{ display: 'flex', height: '100vh' }}>
-      {/* Barra Lateral */}
-      <aside style={{
-        width: '220px',             // Largura fixa para a barra lateral.
-        background: '#f0f0f0',      // Fundo cinza claro.
-        padding: '1rem',           // Preenchimento dentro da barra lateral.
-        display: 'flex',          // Usa flexbox para o layout.
-        flexDirection: 'column'    // Empilha os itens verticalmente.
-      }}>
+    <div className={styles.dashboardContainer}>
+      <aside className={styles.sidebar}>
         <h2>Admin</h2>
-        <nav style={{
-          display: 'flex',          // Usa flexbox para os itens de navegação.
-          flexDirection: 'column',    // Empilha os itens de navegação verticalmente.
-          gap: '0.5rem',         // Espaço entre os itens de navegação.
-          marginTop: '1rem'         // Espaço acima da navegação.
-        }}>
-          {/* Botões para alternar entre as seções. */}
-          <button onClick={() => setSection('poems')} style={{ textAlign: 'left' }}>
-            Gerenciar Poemas
-          </button>
-          <button onClick={() => setSection('profiles')} style={{ textAlign: 'left' }}>
-            Gerenciar Perfis
-          </button>
-          <button onClick={() => setSection('users')} style={{ textAlign: 'left' }}>
-            Gerenciar Usuários
-          </button>
+        <nav>
+          <button onClick={() => setSection('poems')}>Gerenciar Poemas</button>
+          <button onClick={() => setSection('profiles')}>Gerenciar Perfis</button>
+          <button onClick={() => setSection('users')}>Gerenciar Usuários</button>
         </nav>
-        {/* Botão de Logout, posicionado na parte inferior da barra lateral. */}
-        <button
-          onClick={handleLogout}
-          style={{
-            marginTop: 'auto',        // Empurra o botão para a parte inferior.
-            background: '#d9534f', // Fundo vermelho.
-            color: '#fff',         // Texto branco.
-            padding: '0.5rem',       // Preenchimento dentro do botão.
-            width: '100%'          // Largura total da barra lateral.
-          }}
-        >
+        <button onClick={handleLogout} className={styles.logoutButton}>
           Logout
         </button>
       </aside>
 
-      {/* Área de Conteúdo Principal */}
-      <main style={{ flex: 1, padding: '2rem', overflowY: 'auto' }}>
+      <main className={styles.mainContent}>
         <h1>Dashboard Admin</h1>
 
-        {/* Renderização condicional das seções. */}
         {section === 'poems' && (
           <section>
             <h2>Gerenciar Poemas</h2>
-            {/* Botão para exibir o formulário de poema para criar um novo poema. */}
             <button onClick={() => { setShowPoemForm(true); setEditingPoem(null); }}>
               Novo Poema
             </button>
-            {/* Renderiza o formulário de poema se showPoemForm for verdadeiro. */}
             {showPoemForm && (
               <PoemForm
-                poem={editingPoem}        // Passa o poema que está sendo editado (null para novo).
-                onSubmit={handlePoemSubmit} // Passa o manipulador de envio.
-                onCancel={() => { setShowPoemForm(false); setEditingPoem(null); }} // Passa o manipulador de cancelamento.
+                poem={editingPoem}
+                onSubmit={handlePoemSubmit}
+                onCancel={() => { setShowPoemForm(false); setEditingPoem(null); }}
               />
             )}
-            {/* Renderiza a lista de poemas. */}
-            <PoemList
-              poems={poems}             // Passa a lista de poemas.
-              onEdit={p => { setEditingPoem(p); setShowPoemForm(true); }} // Passa o manipulador de edição.
-              onDelete={handlePoemDelete} // Passa o manipulador de exclusão.
-            />
+            <div className={styles.poemListContainer}>
+              <PoemList
+                poems={poems}
+                onEdit={p => { setEditingPoem(p); setShowPoemForm(true); }}
+                onDelete={handlePoemDelete}
+              />
+            </div>
           </section>
         )}
 
         {section === 'profiles' && (
           <section>
             <h2>Gerenciar Perfis</h2>
-            {/* Botão para exibir o formulário de perfil */}
             <button onClick={() => { setShowProfileForm(true); setEditingProfile(null); }}>
               Novo Perfil
             </button>
-            {/* Exibe o formulário de perfil se showProfileForm for verdadeiro */}
             {showProfileForm && (
               <ProfileForm
                 profile={editingProfile}
@@ -250,17 +216,17 @@ export default function DashboardAdmin() {
                 onCancel={() => { setShowProfileForm(false); setEditingProfile(null); }}
               />
             )}
-            {/* Renderiza a lista de perfis */}
-            <ProfileList
-              profiles={profiles}
-              onEdit={p => { setEditingProfile(p); setShowProfileForm(true); }}
-              onDelete={handleProfileDelete}
-            />
+            <div className={styles.profileListContainer}>
+              <ProfileList
+                profiles={profiles}
+                onEdit={p => { setEditingProfile(p); setShowProfileForm(true); }}
+                onDelete={handleProfileDelete}
+              />
+            </div>
           </section>
         )}
 
-        {/* Exibe quaisquer erros. */}
-        {error && <p style={{ color: 'red' }}>Erro: {error}</p>}
+        {error && <p className={styles.error}>Erro: {error}</p>}
       </main>
     </div>
   );

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import styles from '../../styles/PoemForm.module.css';
 
 /**
  * Componente de formulário para criar ou editar poemas.
@@ -44,37 +45,31 @@ export default function PoemForm({ initial, onSave, onCancel }) {
 
   // Renderiza o formulário.
   return (
-    <form onSubmit={handleSubmit} style={{ border: '1px solid #ccc', padding: '1rem', marginBottom: '1rem' }}>
-      {/* Aplica estilos de borda, preenchimento e margem inferior ao formulário. */}
-      <div>
-        <label>Título:</label><br />
-        <input value={title} onChange={(e) => setTitle(e.target.value)} required />
-        {/* Campo de entrada para o título do poema.  'required' garante que o campo seja preenchido. */}
-      </div>
-      <div>
-        <label>Texto:</label><br />
-        <textarea value={text} onChange={(e) => setText(e.target.value)} required />
-        {/* Área de texto para o texto do poema. 'required' garante que o campo seja preenchido. */}
-      </div>
-      <div>
-        <label>Autor:</label><br />
-        <input value={author} onChange={(e) => setAuthor(e.target.value)} required />
-        {/* Campo de entrada para o autor do poema. 'required' garante que o campo seja preenchido. */}
-      </div>
-      <div>
-        <label>URL da Imagem:</label><br />
-        <input value={imageUrl} onChange={(e) => setImageUrl(e.target.value)} />
-        {/* Campo de entrada para a URL da imagem do poema. */}
-      </div>
-      <div>
-        <label>Data (dd/MM/yyyy):</label><br />
-        <input value={postDate} onChange={(e) => setPostDate(e.target.value)} placeholder="12/05/2025" required />
-        {/* Campo de entrada para a data de publicação do poema. 'required' garante que o campo seja preenchido. */}
-      </div>
-      <button type="submit">Salvar</button>
-      {/* Botão para enviar o formulário. */}
-      <button type="button" onClick={onCancel} style={{ marginLeft: '1rem' }}>Cancelar</button>
-      {/* Botão para cancelar a operação. 'onClick' chama a função 'onCancel' passada como prop. */}
-    </form>
+  <form onSubmit={handleSubmit} className={styles.form}>
+    <div>
+      <label htmlFor="title" className={styles.label}>Título:</label><br />
+      <input type="text" id="title" value={title} onChange={(e) => setTitle(e.target.value)} required />
+    </div>
+    <div>
+      <label htmlFor="text" className={styles.label}>Texto:</label><br />
+      <textarea id="text" value={text} onChange={(e) => setText(e.target.value)} required />
+    </div>
+    <div>
+      <label htmlFor="author" className={styles.label}>Autor:</label><br />
+      <input type="text" id="author" value={author} onChange={(e) => setAuthor(e.target.value)} required />
+    </div>
+    <div>
+      <label htmlFor="imageUrl" className={styles.label}>URL da Imagem:</label><br />
+      <input type="text" id="imageUrl" value={imageUrl} onChange={(e) => setImageUrl(e.target.value)} />
+    </div>
+    <div>
+      <label htmlFor="postDate" className={styles.label}>Data (dd/MM/yyyy):</label><br />
+      <input type="text" id="postDate" value={postDate} onChange={(e) => setPostDate(e.target.value)} placeholder="12/05/2025" required />
+    </div>
+    <div className={styles['form-button-group']}>
+      <button type="submit" className={styles.formButton}>Salvar</button>
+      <button type="button" onClick={onCancel} className={styles.formButton}>Cancelar</button>
+    </div>
+  </form>
   );
 }

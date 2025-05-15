@@ -1,0 +1,85 @@
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  padding: 2rem;
+  border: 1px solid #dcdcdc; /* Borda sutil */
+  border-radius: 8px;
+  background-color: #f9f9f9; /* Fundo claro */
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05); /* Sombra suave */
+  margin-bottom: 1.5rem;
+  max-width: 500px; /* Largura máxima para melhor leitura */
+  width: 95%;
+}
+
+@media (min-width: 768px) {
+  .form {
+    width: 80%;
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
+
+.form div {
+  display: flex;
+  flex-direction: column;
+}
+
+.form label {
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+  color: #333;
+  font-size: 1rem;
+}
+
+.form input[type="text"],
+.form input[type="email"] {
+  padding: 0.8rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 1rem;
+  color: #333;
+  background-color: #fff;
+  transition: border-color 0.2s ease-in-out;
+}
+
+.form input:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 5px rgba(0, 123, 255, 0.2);
+}
+
+.form button-group {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.form button {
+  padding: 0.8rem 1.2rem;
+  border: none;
+  border-radius: 6px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out;
+}
+
+.form button[type="submit"] {
+  background-color: #28a745; /* Verde para salvar */
+  color: white;
+}
+
+.form button[type="submit"]:hover {
+  background-color: #1e7e34;
+}
+
+.form button[type="button"] {
+  background-color: #f8f9fa; /* Cinza claro para cancelar */
+  color: #495057;
+  border: 1px solid #ced4da;
+}
+
+.form button[type="button"]:hover {
+  background-color: #e2e6ea;
+  border-color: #adb5bd;
+}

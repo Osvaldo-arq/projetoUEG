@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import styles from '../../styles/PoemForm.module.css';
 
 /**
  * ProfileForm Component:
@@ -49,47 +50,55 @@ export default function ProfileForm({ profile, onSubmit, onCancel }) {
 
   // Renderiza o formulário:
   return (
-    <form onSubmit={handleSubmit} style={{ marginBottom: '1rem' }}>
+    <form onSubmit={handleSubmit} className={styles.form}>
       <div>
-        <label>Nome: </label>
+        <label htmlFor="firstName" className={styles.label}>Nome: </label>
         <input
+          type="text"
+          id="firstName"
           value={firstName}
-          onChange={(e) => setFirstName(e.target.value)} // Atualiza o estado firstName quando a entrada muda.
-          required // Torna este campo obrigatório.
+          onChange={(e) => setFirstName(e.target.value)}
+          required
         />
       </div>
       <div>
-        <label>Sobrenome: </label>
+        <label htmlFor="lastName" className={styles.label}>Sobrenome: </label>
         <input
+          type="text"
+          id="lastName"
           value={lastName}
-          onChange={(e) => setLastName(e.target.value)} // Atualiza o estado lastName quando a entrada muda.
-          required // Torna este campo obrigatório.
+          onChange={(e) => setLastName(e.target.value)}
+          required
         />
       </div>
       <div>
-        <label>Telefone: </label>
+        <label htmlFor="phone" className={styles.label}>Telefone: </label>
         <input
+          type="text"
+          id="phone"
           value={phone}
-          onChange={(e) => setPhone(e.target.value)} // Atualiza o estado phone quando a entrada muda.
-          required // Torna este campo obrigatório.
+          onChange={(e) => setPhone(e.target.value)}
+          required
         />
       </div>
       <div>
-        <label>Email: </label>
+        <label htmlFor="userEmail" className={styles.label}>Email: </label>
         <input
-          type="email" // Define o tipo de entrada como email para validação e melhor UI.
+          type="email"
+          id="userEmail"
           value={userEmail}
-          onChange={(e) => setUserEmail(e.target.value)} // Atualiza o estado userEmail quando a entrada muda.
-          required // Torna este campo obrigatório.
+          onChange={(e) => setUserEmail(e.target.value)}
+          required
         />
       </div>
-      {/* Botões para salvar ou cancelar o formulário. */}
-      <button type="submit" style={{ marginRight: '0.5rem' }}>
-        Salvar
-      </button>
-      <button type="button" onClick={onCancel}>
-        Cancelar
-      </button>
+      <div className={styles['form-button-group']}>
+        <button type="submit" className={styles.formButton}>
+          Salvar
+        </button>
+        <button type="button" onClick={onCancel} className={styles.formButton}>
+          Cancelar
+        </button>
+      </div>
     </form>
   );
 }
