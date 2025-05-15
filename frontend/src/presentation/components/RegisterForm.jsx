@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import AuthService from '../../application/AuthService';
 import { useNavigate } from 'react-router-dom';
+import styles from '../../styles/RegisterForm.module.css';
 
 export default function RegisterForm() {
   // Define o estado para armazenar os dados de registro do usuário.
@@ -45,40 +46,46 @@ export default function RegisterForm() {
 
   // Renderiza o formulário de registro.
   return (
-    <form onSubmit={onSubmit}>
-      <h2>Cadastro</h2>
-      {/* Exibe a mensagem de erro, se houver */}
-      {error && <div style={{color:'red'}}>{error}</div>}
+    <div className={styles.container}>
+      <form onSubmit={onSubmit} className={styles.form}>
+        <h2 >Cadastro</h2>
+        {/* Exibe a mensagem de erro, se houver */}
+        {error && <div className={styles.form} >{error}</div>}
 
-      <input
-        placeholder="Username"
-        value={username}
-        onChange={e => setUsername(e.target.value)}
-        required // Campo obrigatório
-      />
-      <input
-        type="email"
-        placeholder="Email"
-        value={email}
-        onChange={e => setEmail(e.target.value)}
-        required // Campo obrigatório
-      />
-      <input
-        type="password"
-        placeholder="Password"
-        value={password}
-        onChange={e => setPassword(e.target.value)}
-        required // Campo obrigatório
-      />
-      <input
-        type="password"
-        placeholder="Confirm Password"
-        value={confirmPassword}
-        onChange={e => setConfirmPass(e.target.value)} // Campo de confirmação de senha
-        required // Campo obrigatório
-      />
+        <input
+          placeholder="Username"
+          value={username}
+          onChange={e => setUsername(e.target.value)}
+          required // Campo obrigatório
+          className={styles.formInput}
+        />
+        <input
+          type="email"
+          placeholder="Email"
+          value={email}
+          onChange={e => setEmail(e.target.value)}
+          required // Campo obrigatório
+          className={styles.formInput}
+        />
+        <input
+          type="password"
+          placeholder="Password"
+          value={password}
+          onChange={e => setPassword(e.target.value)}
+          required // Campo obrigatório
+          className={styles.formInput}
+        />
+        <input
+          type="password"
+          placeholder="Confirm Password"
+          value={confirmPassword}
+          onChange={e => setConfirmPass(e.target.value)} // Campo de confirmação de senha
+          required // Campo obrigatório
+          className={styles.formInput}
+        />
 
-      <button type="submit">Registrar</button> {/* Botão para enviar o formulário */}
-    </form>
+        <button type="submit" className={styles.button}>Registrar</button> {/* Botão para enviar o formulário */}
+      </form>
+    </div>
   );
 }

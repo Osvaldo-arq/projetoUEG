@@ -2,6 +2,7 @@ import React, { useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import AuthService from '../../application/AuthService';
 import { AuthContext } from '../../context/AuthContext';
+import styles from '../../styles/LoginForm.module.css';
 
 /**
  * Componente LoginForm:
@@ -73,22 +74,38 @@ export default function LoginForm() {
 
   // Renderização do componente:
   return (
-    <form onSubmit={onSubmit}>
-      <div>
-        <label>Usuário:</label>
-        <input name="username" value={credentials.username} onChange={onChange} required />
-      </div>
-      <div>
-        <label>Senha:</label>
-        <input type="password" name="password" value={credentials.password} onChange={onChange} required />
-      </div>
-      {/* Exibe a mensagem de erro, se houver. */}
-      {error && <div style={{ color: 'red' }}>{error}</div>}
-      {/* Botão de envio do formulário.  O botão fica desabilitado enquanto o loading for true. */}
-      <button type="submit" disabled={loading}>
-        {loading ? 'Entrando...' : 'Login'} {/* Exibe "Entrando..." durante o carregamento. */}
-      </button>
-    </form>
+    <div className={styles.container}>
+      <form onSubmit={onSubmit} className={styles.form}> 
+        <div className={styles.formDiv}> 
+          <label htmlFor="username" className={styles.label}>Usuário:</label>
+          <input
+            type="text"
+            id="username"
+            name="username"
+            value={credentials.username}
+            onChange={onChange}
+            required
+            className={styles.input} 
+          />
+        </div>
+        <div className={styles.formDiv}>
+          <label htmlFor="password" className={styles.label}>Senha:</label>
+          <input
+            type="password"
+            id="password"
+            name="password"
+            value={credentials.password}
+            onChange={onChange}
+            required
+            className={styles.input} 
+          />
+        </div>
+        {error && <div className={styles.error}>{error}</div>} 
+        <button type="submit" disabled={loading} className={styles.button}> 
+          {loading ? 'Entrando...' : 'Login'}
+        </button>
+      </form>
+    </div>
   );
 }
 
