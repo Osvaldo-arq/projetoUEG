@@ -1,3 +1,5 @@
+/* PoemList.module.css */
+
 .poemListContainer {
   overflow-x: auto; /* Para responsividade em telas menores */
 }
@@ -41,8 +43,8 @@
   border-radius: 4px;
   font-size: 0.85rem;
   cursor: pointer;
-  background-color: #fff;
-  color: #333;
+  background-color: #f8f9fa; /* Tom de cinza claro */
+  color: #495057; /* Texto cinza escuro */
   transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out, border-color 0.2s ease-in-out;
   margin-left: 0.25rem;
 }
@@ -52,28 +54,32 @@
 }
 
 .poemListTable button:hover {
-  background-color: #e0e0e0;
+  background-color: #e0e0e0; /* Tom de cinza um pouco mais escuro no hover */
   border-color: #b3b3b3;
-  color: #000;
+  color: #212529; /* Texto preto no hover */
 }
 
-.poemListTable button:nth-child(1) { /* Estilo específico para "Editar" */
+/* .poemListTable button:nth-child(1) {  Estilo específico para "Editar" 
+  Mantenha a cor primária se desejar destacar o editar 
   color: #007bff;
-  border-color: #007bff;
-}
+  border-color: #007bff; 
+} */
 
-.poemListTable button:nth-child(1):hover {
-  background-color: rgba(0, 123, 255, 0.1);
-}
+/* .poemListTable button:nth-child(1):hover {
+  Mantenha o hover da cor primária se desejar destacar o editar 
+  background-color: rgba(0, 123, 255, 0.1); 
+} */
 
-.poemListTable button:nth-child(2) { /* Estilo específico para "Excluir" */
+/* .poemListTable button:nth-child(2) {  Estilo específico para "Excluir" 
+  Mantenha a cor de erro se desejar destacar o excluir 
   color: #dc3545;
-  border-color: #dc3545;
-}
+  border-color: #dc3545; 
+} */
 
-.poemListTable button:nth-child(2):hover {
-  background-color: rgba(220, 53, 69, 0.1);
-}
+/* .poemListTable button:nth-child(2):hover {
+  Mantenha o hover da cor de erro se desejar destacar o excluir 
+  background-color: rgba(220, 53, 69, 0.1); 
+} */
 
 /* Estilos para telas menores */
 @media (max-width: 768px) {

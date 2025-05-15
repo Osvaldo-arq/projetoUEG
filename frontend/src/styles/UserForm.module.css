@@ -1,0 +1,117 @@
+/* UserForm.module.css */
+
+.userFormContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  padding: 2rem;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  background-color: #f8f8f8;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  margin-bottom: 2rem;
+  width: 100%;
+  max-width: 80%; /* Ocupa até 80% da largura da tela */
+}
+
+@media (min-width: 768px) {
+  .userFormContainer {
+    max-width: 600px; /* Largura fixa em telas maiores para melhor leitura */
+    margin: 2rem auto; /* Centraliza o formulário na página em telas maiores */
+  }
+}
+
+.userFormContainer div {
+  display: grid; /* Usando Grid para alinhar label e input */
+  grid-template-columns: 1fr; /* Uma coluna por padrão */
+  gap: 0.5rem;
+}
+
+.userFormContainer label {
+  font-size: 1rem;
+  font-weight: 500;
+  color: #444;
+}
+
+.userFormContainer input[type="text"],
+.userFormContainer input[type="email"],
+.userFormContainer input[type="password"],
+.userFormContainer select {
+  padding: 0.75rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 1rem;
+  color: #333;
+  background-color: #fff;
+  transition: border-color 0.2s ease-in-out;
+  width: 100%; /* Ocupa toda a largura da célula do Grid */
+}
+
+.userFormContainer select {
+  padding: 0.75rem;
+}
+
+.userFormContainer input:focus,
+.userFormContainer select:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 6px rgba(0, 123, 255, 0.2);
+}
+
+.userFormContainer .buttons {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1rem;
+  justify-content: flex-end; /* Alinha os botões à direita */
+}
+
+.userFormContainer .buttons button {
+  padding: 0.75rem 1.25rem;
+  border: none;
+  border-radius: 4px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out;
+}
+
+.userFormContainer .buttons button[type="submit"] {
+  background-color: #000000;
+  color: white;
+}
+
+.userFormContainer .buttons button[type="submit"]:hover {
+  background-color: #797979;
+}
+
+.userFormContainer .buttons button[type="button"] {
+  background-color: #f8f9fa;
+  color: #495057;
+  border: 1px solid #ced4da;
+}
+
+.userFormContainer .buttons button[type="button"]:hover {
+  background-color: #e2e6ea;
+  border-color: #adb5bd;
+}
+
+.userFormContainer input::placeholder {
+  color: #999;
+  font-style: italic;
+  opacity: 1;
+}
+
+.userFormContainer :-ms-input-placeholder {
+  color: #999;
+  font-style: italic;
+}
+
+.userFormContainer ::-ms-input-placeholder {
+  color: #999;
+  font-style: italic;
+}
+
+.userFormContainer .error {
+  color: red;
+  font-size: 0.9rem;
+  margin-top: 0.5rem;
+}

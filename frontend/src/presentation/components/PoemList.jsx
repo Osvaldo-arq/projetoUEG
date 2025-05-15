@@ -16,6 +16,7 @@ export default function PoemList({ poems, onEdit, onDelete }) {
             <th>Autor</th>
             <th>Data</th>
             <th>Texto</th>
+            <th>Imagem</th>
             <th>Ações</th>
           </tr>
         </thead>
@@ -27,6 +28,7 @@ export default function PoemList({ poems, onEdit, onDelete }) {
               <td>{p.author}</td>
               <td>{p.postDate}</td>
               <td>{p.text}</td>
+              <td>{p.imageUrl}</td>
               <td>
                 <button onClick={() => onEdit(p)} className={styles.poemListTableButton}>Editar</button>
                 <button onClick={() => onDelete(p.id)} className={styles.poemListTableButton}>Excluir</button>

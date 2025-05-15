@@ -16,7 +16,7 @@ const PoemService = {
   /**
    * Obtém um poema específico pelo seu ID.
    * @param id O ID do poema a ser obtido.
-   * @returns Uma Promise que resolve com a resposta da API, contendo o poema.
+   * @returns Uma Promise que resolve com a resposta da API, contendo o poema (PoemDto).
    */
   getById: (id) =>
     HttpClient.get(`${API}/api/poems/${id}`, localStorage.getItem('token')),
@@ -24,13 +24,29 @@ const PoemService = {
     // O token de autenticação é obtido do localStorage.
 
   /**
-   * Cria um novo poema ou atualiza um poema existente.
-   * @param dto Os dados do poema a serem criados ou atualizados.
-   * @returns Uma Promise que resolve com a resposta da API, contendo o poema completo (PoemDto).
+   * Cria um novo poema.
+   * @param dto Objeto PoemDto contendo os dados do poema a ser criado.
+   * @returns Uma Promise que resolve com a resposta da API, contendo o PoemDto criado.
    */
-  createOrUpdate: async (dto) => {
-    // Retorna o PoemDto completo
+  create: async (dto) => {
     const res = await HttpClient.post(
+      `${API}/api/poems`,
+      dto,
+      localStorage.getItem('token')
+    );
+    // Usa o HttpClient para fazer uma requisição POST para '/api/poems'.
+    // O token de autenticação é obtido do localStorage.
+    return res.json(); // Analisa a resposta como JSON e a retorna.
+  },
+
+  /**
+   * Atualiza um poema existente pelo seu ID.
+   * @param id O ID do poema a ser atualizado.
+   * @param dto Objeto PoemDto contendo os dados atualizados do poema.
+   * @returns Uma Promise que resolve com a resposta da API, contendo o PoemDto atualizado.
+   */
+  update: async (id, dto) => {
+    const res = await HttpClient.post( // Atenção: Usando POST conforme o seu controlador `upsertPoem`
       `${API}/api/poems`,
       dto,
       localStorage.getItem('token')
