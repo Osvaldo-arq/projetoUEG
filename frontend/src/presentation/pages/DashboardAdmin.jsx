@@ -4,6 +4,7 @@ import { FaBars, FaTimes } from 'react-icons/fa'; // Importa os ícones de barra
 import PoemService from '../../application/PoemService';       // Importa o serviço para manipulação de poemas
 import PoemList from '../components/PoemList';         // Importa o componente para exibir a lista de poemas
 import PoemForm from '../components/PoemForm';         // Importa o componente para o formulário de poema
+import Sidebar from '../components/Sidebar';       
 
 import ProfileService from '../../application/ProfileService'; // Importa o serviço para manipulação de perfis
 import ProfileList from '../components/ProfileList';       // Importa o componente para exibir a lista de perfis
@@ -169,21 +170,12 @@ export default function DashboardAdmin() {
   return (
     <div className={styles.dashboardContainer}>
       {/* Barra lateral */}
-      <aside className={`${styles.sidebar} ${isSidebarMinimized ? styles.sidebarMinimized : ''}`}>
-        <h2>Admin</h2>
-        <button onClick={toggleSidebar} className={styles.toggleSidebarButton}>
-          {isSidebarMinimized ? <FaBars /> : <FaTimes />} {/* Exibe ícone de menu ou fechar */}
-        </button>
-        <nav>
-          <button onClick={() => setSection('poems')} className={styles.navButton}>Gerenciar Poemas</button>
-          <button onClick={() => setSection('profiles')} className={styles.navButton}>Gerenciar Perfis</button>
-          <button onClick={() => setSection('users')} className={styles.navButton}>Gerenciar Usuários</button>
-        </nav>
-        <button onClick={handleLogout} className={styles.logoutButton}>
-          Logout
-        </button>
-      </aside>
-
+      <Sidebar
+        isMinimized={isSidebarMinimized}
+        toggleSidebar={toggleSidebar}
+        setSection={setSection}
+        handleLogout={handleLogout}
+      />
       {/* Conteúdo principal */}
       <main className={`${styles.mainContent} ${isSidebarMinimized ? styles.mainContentMinimized : ''}`}>
         <h1>Dashboard Admin</h1>

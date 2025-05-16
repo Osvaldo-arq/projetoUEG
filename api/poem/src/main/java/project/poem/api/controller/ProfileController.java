@@ -38,7 +38,7 @@ public class ProfileController {
     public ProfileController(ProfileService profileService) {
         this.profileService = profileService;
     }
-    
+
     /**
      * Endpoint para listar todos os perfis.
      * Retorna uma lista de objetos ProfileDto representando os perfis.
@@ -58,8 +58,13 @@ public class ProfileController {
      * @return ResponseEntity contendo o perfil correspondente ao email fornecido.
      */
     @GetMapping("/{email}")
-    public ResponseEntity<ProfileDto> getProfile(@PathVariable String email) {
-        return ResponseEntity.ok(profileService.getByEmail(email));
+    public ResponseEntity<ProfileDto> getProfileByEmail(@PathVariable String email) {
+        ProfileDto profile = profileService.getByEmail(email);
+        if (profile != null) {
+            return ResponseEntity.ok(profile);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     /**

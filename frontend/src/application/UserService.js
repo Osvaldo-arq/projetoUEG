@@ -33,11 +33,18 @@ const UserService = {
     HttpClient.delete(`${API}/api/auth/${id}`, localStorage.getItem('token')),
 
   /**
-   * Obtém um usuário pelo seu ID (opcional, dependendo da necessidade).
+   * Obtém um usuário pelo seu ID.
    * @param {number} id - ID do usuário a ser buscado.
    */
   getById: (id) =>
     HttpClient.get(`${API}/api/auth/${id}`, localStorage.getItem('token')),
+
+  /**
+   * Obtém um usuário pelo seu email.
+   * @param {string} email - Email do usuário a ser buscado.
+   */
+  getByEmail: (email) =>  // Nova função para buscar usuário por email
+    HttpClient.get(`${API}/api/auth/user/email/${email}`, localStorage.getItem('token')),
 };
 
 export default UserService;

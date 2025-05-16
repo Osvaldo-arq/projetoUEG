@@ -1,6 +1,8 @@
 package project.poem.api.controller;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.validation.Valid;
@@ -28,122 +30,145 @@ import project.poem.application.service.UserService;
 import project.poem.domain.model.User;
 import project.poem.infrastructure.security.UsernameAlreadyExistsException;
 
-@RestController // Indica que esta classe é um controlador REST.
-@RequestMapping("/api/auth") // Mapeia as URLs para este controlador para começarem com "/api/auth".
-@CrossOrigin(origins = "http://localhost:3000") // Habilita CORS para permitir requisições de http://localhost:3000.
+@RestController
+@RequestMapping("/api/auth")
+@CrossOrigin(origins = "http://localhost:3000")
 public class AuthController {
 
-    private final UserService userService; // Declara o serviço UserService, que será injetado pelo Spring.
-    private final UserMapper userMapper; // Declara o mapper UserMapper, que será injetado pelo Spring.
+    private final UserService userService;
+    private final UserMapper userMapper;
 
-    // Construtor para injeção de dependência do UserService e UserMapper.
     public AuthController(UserService userService, UserMapper userMapper) {
         this.userService = userService;
         this.userMapper = userMapper;
     }
 
     /**
-     * Endpoint para registrar um novo usuário.
-     * @param userDto DTO contendo os dados do usuário a serem registrados.  A anotação @Valid faz a validação do DTO.
+     * Endpoint para registar um novo utilizador.
+     * @param userDto DTO contendo os dados do utilizador a serem registados. A anotação @Valid faz a validação do DTO.
      * @return ResponseEntity contendo o token JWT em caso de sucesso, ou uma mensagem de erro em caso de falha.
      */
-    @PostMapping("/register") // Mapeia requisições POST para "/api/auth/register".
+    @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody @Valid UserDto userDto) {
         try {
-            String token = userService.registerUser(userDto); // Chama o serviço para registrar o usuário.
-            return ResponseEntity.ok(token); // Retorna o token com status 200 OK.
+            String token = userService.registerUser(userDto);
+            return ResponseEntity.ok(token);
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(e.getMessage()); // Retorna erro 400 Bad Request para argumentos inválidos.
+            return ResponseEntity.badRequest().body(e.getMessage());
         } catch (UsernameAlreadyExistsException e) {
-            return ResponseEntity.status(409).body(e.getMessage()); // Retorna erro 409 Conflict para usuário já existente.
+            return ResponseEntity.status(409).body(e.getMessage());
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR) // Retorna erro 500 Internal Server Error.
-                                 .body("Erro interno ao registrar o usuário");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                                 .body("Erro interno ao registar o utilizador");
         }
     }
 
     /**
-     * Endpoint para autenticar um usuário e obter um token JWT.
-     * @param loginDto DTO contendo o nome de usuário e senha para login.
-     * @return ResponseEntity contendo o token JWT e o role do usuário no header em caso de sucesso,
+     * Endpoint para autenticar um utilizador e obter um token JWT.
+     * @param loginDto DTO contendo o nome de utilizador e senha para login.
+     * @return ResponseEntity contendo o token JWT e o role do utilizador no header em caso de sucesso,
      * ou uma mensagem de erro em caso de falha.
      */
-    @PostMapping("/login") // Mapeia requisições POST para "/api/auth/login".
+    @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody @Valid LoginDto loginDto) {
         try {
-            String token = userService.authenticateUser(loginDto.getUsername(), loginDto.getPassword()); // Autentica o usuário.
-            User u = userService.getUserByUsername(loginDto.getUsername()); // Busca o usuário pelo nome de usuário.
-            String role = u.getRole().name(); // Obtém o role do usuário.
+            String token = userService.authenticateUser(loginDto.getUsername(), loginDto.getPassword());
+            User u = userService.getUserByUsername(loginDto.getUsername());
+            String role = u.getRole().name();
+            String email = u.getEmail();
 
-            return ResponseEntity.ok() // Retorna resposta 200 OK com token e role.
-                                 .header("Role", role) // Adiciona o role ao header da resposta.
-                                 .body(token); // Adiciona o token ao corpo da resposta.
+            // Cria um mapa para armazenar o token e o email
+            Map<String, Object> responseData = new HashMap<>();
+            responseData.put("token", token);
+            responseData.put("email", email);
+
+            return ResponseEntity.ok()
+                                 .header("Role", role)
+                                 .body(responseData); // Retorna o mapa com token e email
         } catch (BadCredentialsException e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED) // Retorna erro 401 Unauthorized para credenciais inválidas.
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                                  .body("Credenciais inválidas");
         } catch (AuthenticationException e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED) // Retorna erro 401 Unauthorized para falha de autenticação.
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                                  .body("Falha na autenticação");
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST) // Retorna erro 400 Bad Request para usuário não encontrado.
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                                  .body(e.getMessage());
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR) // Retorna erro 500 Internal Server Error.
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                                  .body("Erro interno ao autenticar");
         }
     }
 
     /**
-     * Endpoint para atualizar os dados de um usuário.
-     * Apenas o próprio usuário ou um administrador podem acessar este método.
-     * @param id O ID do usuário a ser atualizado, extraído da URL.
-     * @param userDto DTO contendo os novos dados do usuário.  A anotação @Valid faz a validação do DTO.
+     * Endpoint para atualizar os dados de um utilizador.
+     * Apenas o próprio utilizador ou um administrador podem aceder a este método.
+     * @param id O ID do utilizador a ser atualizado, extraído da URL.
+     * @param userDto DTO contendo os novos dados do utilizador. A anotação @Valid faz a validação do DTO.
      * @return ResponseEntity com uma mensagem de sucesso ou erro.
      */
-    @PutMapping("/{id}") // Mapeia requisições PUT para "/api/auth/{id}".
-    @PreAuthorize("#id == authentication.principal.id or hasRole('ADMIN')") // Garante que apenas o próprio usuário ou um admin pode atualizar.
+    @PutMapping("/{id}")
+    @PreAuthorize("#id == authentication.principal.id or hasRole('ADMIN')")
     public ResponseEntity<?> updateUser(@PathVariable Long id, @RequestBody @Valid UserDto userDto) {
         try {
-            userService.updateUser(id, userDto); // Chama o serviço para atualizar o usuário.
-            return ResponseEntity.ok("Usuário atualizado com sucesso."); // Retorna mensagem de sucesso.
+            userService.updateUser(id, userDto);
+            return ResponseEntity.ok("Utilizador atualizado com sucesso.");
         } catch (UsernameAlreadyExistsException e) {
-            return ResponseEntity.badRequest().body("Nome de usuário já existe."); // Retorna erro 400 para usuário já existente.
+            return ResponseEntity.badRequest().body("Nome de utilizador já existe.");
         } catch (UsernameNotFoundException e) {
-            return ResponseEntity.status(404).body(e.getMessage()); // Retorna erro 404 para usuário não encontrado.
+            return ResponseEntity.status(404).body(e.getMessage());
         } catch (Exception e) {
-            return ResponseEntity.internalServerError().body("Erro ao atualizar o usuário."); // Retorna erro 500.
+            return ResponseEntity.internalServerError().body("Erro ao atualizar o utilizador.");
         }
     }
 
     /**
-     * Endpoint para deletar um usuário.
-     * Apenas o próprio usuário ou um administrador podem acessar este método.
-     * @param id O ID do usuário a ser deletado, extraído da URL.
+     * Endpoint para eliminar um utilizador.
+     * Apenas o próprio utilizador ou um administrador podem aceder a este método.
+     * @param id O ID do utilizador a ser eliminado, extraído da URL.
      * @return ResponseEntity com uma mensagem de sucesso ou erro.
      */
-    @DeleteMapping("/{id}") // Mapeia requisições DELETE para "/api/auth/{id}".
-    @PreAuthorize("#id == authentication.principal.id or hasRole('ADMIN')") // Garante que apenas o próprio usuário ou um admin pode deletar.
+    @DeleteMapping("/{id}")
+    @PreAuthorize("#id == authentication.principal.id or hasRole('ADMIN')")
     public ResponseEntity<?> deleteUser(@PathVariable Long id) {
         try {
-            userService.deleteUser(id); // Chama o serviço para deletar o usuário.
-            return ResponseEntity.ok("Usuário deletado com sucesso."); // Retorna mensagem de sucesso.
+            userService.deleteUser(id);
+            return ResponseEntity.ok("Utilizador eliminado com sucesso.");
         } catch (Exception e) {
-            return ResponseEntity.internalServerError().body("Erro ao deletar o usuário."); // Retorna erro 500.
+            return ResponseEntity.internalServerError().body("Erro ao eliminar o utilizador.");
         }
     }
 
     /**
-     * Endpoint para obter todos os usuários.
-     * Apenas administradores podem acessar este método.
+     * Endpoint para obter todos os utilizadores.
+     * Apenas administradores podem aceder a este método.
      * @return ResponseEntity contendo a lista de UserDto.
      */
-    @GetMapping("/users") // Mapeia requisições GET para "/api/auth/users".
-    @PreAuthorize("hasRole('ADMIN')") // Garante que apenas usuários com role 'ADMIN' podem acessar.
+    @GetMapping("/users")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<UserDto>> getAllUsers() {
-        List<User> users = userService.getAllUsers(); // Busca a lista de todos os usuários.
-        List<UserDto> userDtos = users.stream() // Converte a lista de User para uma lista de UserDto usando Stream.
-                                      .map(userMapper::toDto) // Mapeia cada User para UserDto usando o mapper.
-                                      .collect(Collectors.toList()); // Coleta os UserDto em uma lista.
-        return ResponseEntity.ok(userDtos); // Retorna a lista de UserDto com status 200 OK.
+        List<User> users = userService.getAllUsers();
+        List<UserDto> userDtos = users.stream()
+                                      .map(userMapper::toDto)
+                                      .collect(Collectors.toList());
+        return ResponseEntity.ok(userDtos);
+    }
+
+    /**
+     * Endpoint para obter um utilizador pelo email.
+     * Apenas o próprio utilizador ou um administrador podem aceder a este método.
+     * @param email O email do utilizador a ser obtido, extraído da URL.
+     * @return ResponseEntity contendo o UserDto correspondente ao email fornecido.
+     */
+    @GetMapping("/user/email/{email}")
+    @PreAuthorize("hasRole('ADMIN') or #email == authentication.name") // Usa authentication.name
+    public ResponseEntity<UserDto> getUserByEmail(@PathVariable String email) {
+        User user = userService.getUserByEmail(email);
+        if (user == null) {
+            return ResponseEntity.notFound().build();
+        }
+        UserDto userDto = userMapper.toDto(user);
+        return ResponseEntity.ok(userDto);
     }
 }
+

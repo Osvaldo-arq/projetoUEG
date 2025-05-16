@@ -1,6 +1,7 @@
 package project.poem.application.service;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -160,5 +161,17 @@ public class UserService {
 
     public List<User> getAllUsers() {
         return userRepository.findAll();
+    }
+
+    /**
+     * Retorna os dados de um usuário a partir do email.
+     *
+     * @param email Email do usuário.
+     * @return Entidade User ou null se não encontrado.
+     */
+    @Transactional(readOnly = true)
+    public User getUserByEmail(String email) {
+        Optional<User> userOptional = userRepository.findByEmail(email);
+        return userOptional.orElse(null);
     }
 }

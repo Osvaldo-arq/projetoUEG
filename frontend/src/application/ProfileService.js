@@ -1,4 +1,3 @@
-
 import HttpClient from '../infrastructure/HttpClient';
 
 const API = ''; // proxy CRA
@@ -9,6 +8,12 @@ const ProfileService = {
    */
   listAll: () =>
     HttpClient.get(`${API}/api/profile`, localStorage.getItem('token')),
+
+  /**
+   * Obtém o perfil do usuário pelo email.
+   */
+  getByEmail: (email) =>
+    HttpClient.get(`${API}/api/profile/${email}`, localStorage.getItem('token')),
 
   /**
    * Cria um novo perfil.

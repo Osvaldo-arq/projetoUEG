@@ -25,15 +25,22 @@ const AuthService = {
       throw new Error(errorText || 'Falha no login');
     }
 
-    // Se o login for bem-sucedido, obtém o token da resposta.
-    const token = await res.text();
+    // Se o login for bem-sucedido, obtém os dados da resposta.  Espera-se que seja um JSON contendo token e email.
+    const responseData = await res.json();
+    const { token, email } = responseData;
+
     // Decodifica o token JWT para obter os claims (informações) do usuário, incluindo o role.
     const claims = parseJwt(token);
     // Obtém o role do usuário dos claims, ou usa 'USER' como padrão se o role não estiver presente.
     const role = claims.role || 'USER';
 
-    // Retorna um novo objeto User com o nome de usuário, token e role.
-    return new User(username, token, role);
+    // Armazena o token, email e username no localStorage.
+    localStorage.setItem('token', token);
+    localStorage.setItem('userEmail', email);
+    localStorage.setItem('userName', username); // Armazena o nome de usuário
+
+    // Retorna um novo objeto User com o nome de usuário, token, role e email.
+    return new User(username, token, role, email);
   },
 
   /**
@@ -58,7 +65,8 @@ const AuthService = {
     }
 
     // Se o registro for bem-sucedido, obtém o token da resposta.
-    return res.text();
+    const responseData = await res.text();
+    return responseData;
   },
 };
 
