@@ -4,8 +4,8 @@ import ProfileService from '../../application/ProfileService';
 import ProfileList from '../components/ProfileList';
 import ProfileForm from '../components/ProfileForm';
 import UserService from '../../application/UserService';
-import UserList from '../components/UserList';
-import UserForm from '../components/UserForm';
+import UserList from '../components/UserListUser';
+import UserForm from '../components/UserFormUser';
 import styles from '../../styles/DashboardUser.module.css';
 
 /**
