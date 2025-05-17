@@ -1,6 +1,7 @@
 import React from 'react';
 import { FaBars, FaTimes } from 'react-icons/fa';
 import styles from '../../styles/Sidebar.module.css';
+import { useNavigate } from 'react-router-dom';
 
 /**
  * Sidebar Component:
@@ -20,7 +21,10 @@ export default function Sidebar({
     { key: 'profile', label: 'Meu Perfil', icon: null },
     { key: 'user', label: 'Minha Conta', icon: null }
   ];
-
+  const navigate = useNavigate(); // Hook para navegação programática
+  const goHome = () => {
+    navigate('/'); // Redireciona para a homepage
+  };
   return (
     <aside className={`${styles.sidebar} ${isMinimized ? styles.sidebarMinimized : ''}`}>      
       <div className={styles.header}>
@@ -40,9 +44,15 @@ export default function Sidebar({
           </button>
         ))}
       </nav>
-      <button onClick={handleLogout} className={styles.logoutButton}>
-        Logout
-      </button>
+        {/* Botão para retornar à homepage */}
+        <button onClick={goHome} className={styles.logoutButton}>
+          Home
+        </button>
+
+        {/* Botão de logout */}
+        <button onClick={handleLogout} className={styles.logoutButton}>
+          Logout
+        </button>
     </aside>
   );
 }
