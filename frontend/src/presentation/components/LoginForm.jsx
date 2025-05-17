@@ -63,7 +63,7 @@ export default function LoginForm() {
       login(user.token, user.role);
       // Redireciona o usuário para a página de dashboard apropriada com base no seu role.
       // Por exemplo, se o usuário for um "ADMIN", ele será redirecionado para "/admin/dashboard".
-      navigate(`/${user.role.toLowerCase()}/dashboard`, { replace: true }); // O replace: true substitui a página atual no histórico de navegação.
+      navigate(`/${user.role.toLowerCase()}/`, { replace: true }); // O replace: true substitui a página atual no histórico de navegação.
     } catch (err) {
       // Captura qualquer erro que ocorra durante o processo de login (por exemplo, credenciais inválidas).
       setError(err.message); // Atualiza o estado de erro com a mensagem de erro.

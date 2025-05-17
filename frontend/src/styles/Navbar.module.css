@@ -1,0 +1,49 @@
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2rem;
+  background-color: #1f2937; /* Gray-800 */
+  color: white;
+}
+
+.logo a {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: white;
+  text-decoration: none;
+}
+
+.navLinks {
+  list-style: none;
+  display: flex;
+  gap: 1.5rem;
+  align-items: center;
+}
+
+.navLinks a {
+  color: white;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.navLinks a:hover {
+  text-decoration: underline;
+}
+
+.authButton {
+  padding: 0.5rem 1rem;
+  background-color: #1f2937; /* Gray-800 */
+  color: white;
+  border: none;
+  border-radius: 0.375rem;
+  cursor: pointer;
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.authButton:hover {
+  background-color: #374151; /* Gray-700 */
+}
+
+

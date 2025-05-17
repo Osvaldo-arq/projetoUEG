@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Sidebar from '../components/SidebarUser';
 import ProfileService from '../../application/ProfileService';
-import ProfileList from '../components/ProfileList';
+import ProfileList from '../components/ProfileListUser';
 import ProfileForm from '../components/ProfileForm';
 import UserService from '../../application/UserService';
 import UserList from '../components/UserListUser';
@@ -112,7 +112,7 @@ export default function DashboardUser() {
     localStorage.removeItem('token');     // Remove token
     localStorage.removeItem('userEmail'); // Remove email
     localStorage.removeItem('userName');  // Remove nome
-    window.location.href = '/login';       // Redireciona para login
+    window.location.href = '/';       // Redireciona para login
   };
 
   // Renderiza o componente

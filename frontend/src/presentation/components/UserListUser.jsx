@@ -31,7 +31,6 @@ const UserList = ({ users, onEdit, onDelete }) => {
                 <td>{user.email}</td>
                 <td className={styles.actions}>
                   <button onClick={() => onEdit(user)}>Editar</button>
-                  <button onClick={() => onDelete(user.id)}>Excluir</button>
                 </td>
               </tr>
             ))}

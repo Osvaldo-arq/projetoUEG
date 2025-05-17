@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { FaBars, FaTimes } from 'react-icons/fa'; // Importa os ícones de barra e X para o menu
 
 import PoemService from '../../application/PoemService';       // Importa o serviço para manipulação de poemas
 import PoemList from '../components/PoemList';         // Importa o componente para exibir a lista de poemas
@@ -158,7 +157,7 @@ export default function DashboardAdmin() {
   // Função para lidar com o logout
   const handleLogout = () => {
     localStorage.removeItem('token'); // Remove o token de autenticação
-    window.location.href = '/login';  // Redireciona para a página de login
+    window.location.href = '/';  // Redireciona para a página de login
   };
 
   // Função para alternar a visibilidade da barra lateral

@@ -1,91 +1,124 @@
 import React, { useState } from 'react';
-import AuthService from '../../application/AuthService';
-import { useNavigate } from 'react-router-dom';
-import styles from '../../styles/RegisterForm.module.css';
+import AuthService from '../../application/AuthService';       // Importa o serviço de autenticação
+import ProfileService from '../../application/ProfileService'; // Importa o serviço de perfil
+import styles from '../../styles/RegisterForm.module.css'; // Importa os estilos CSS do componente
 
-export default function RegisterForm() {
-  // Define o estado para armazenar os dados de registro do usuário.
-  const [username, setUsername]           = useState(''); // Usado para armazenar o nome de usuário
-  const [email, setEmail]                 = useState(''); // Usado para armazenar o email do usuário
-  const [password, setPassword]           = useState(''); // Usado para armazenar a senha do usuário
-  const [confirmPassword, setConfirmPass] = useState(''); // Usado para armazenar a confirmação da senha
-  const [error, setError]                 = useState(null); // Usado para armazenar mensagens de erro
-  const navigate = useNavigate();           // Usado para redirecionar o usuário após o registro
+/**
+ * Componente RegisterForm:
+ *
+ * Este componente exibe um formulário para o usuário se registrar na aplicação.
+ * Ele coleta informações como nome de usuário, email, senha, nome, sobrenome e telefone.
+ */
+export default function RegisterForm({ onSuccess }) {
+  // Variáveis de estado para armazenar os valores dos campos do formulário
+  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPass] = useState('');
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
+  const [phone, setPhone] = useState('');
+  const [error, setError] = useState(null); // Estado para armazenar mensagens de erro
 
-  /**
-   * Função assíncrona para lidar com o envio do formulário de registro.
-   * Realiza a validação da confirmação de senha e, em caso de sucesso,
-   * chama o serviço AuthService para registrar o usuário, salva o token no localStorage
-   * e redireciona para a página de dashboard.
-   */
-  const onSubmit = async e => {
+  // Função para lidar com o envio do formulário
+  const onSubmit = async (e) => {
     e.preventDefault(); // Previne o comportamento padrão do formulário (recarregar a página)
-    setError(null);      // Limpa qualquer erro anterior
+    setError(null); // Limpa qualquer erro anterior
 
-    // Validação da confirmação de senha
+    // Validação: verifica se as senhas coincidem
     if (password !== confirmPassword) {
-      setError('Senhas não coincidem'); // Define uma mensagem de erro se as senhas não coincidirem
-      return;                           // Impede a continuação do processo de registro
+      setError('Senhas não coincidem');
+      return;
     }
 
     try {
-      console.log('RegisterForm submit', { username, email }); // Log para depuração
-      // Chama o serviço AuthService para registrar o usuário
+      // 1) Cria o usuário e recebe o token de autenticação
       const token = await AuthService.register(username, email, password);
-      console.log('RegisterForm received token', token); // Log do token recebido
+      localStorage.setItem('token', token); // Armazena o token no localStorage
+      localStorage.setItem('role', 'USER'); // Armazena a role do usuário
 
-      localStorage.setItem('token', token); // Armazena o token no localStorage para uso futuro
-      localStorage.setItem('role',  'USER');    // Armazena a role do usuário
+      // 2) Cria o perfil associado ao usuário
+      await ProfileService.create({ firstName, lastName, phone, userEmail: email });
 
-      navigate('/dashboard', { replace: true }); // Redireciona o usuário para o dashboard
+      // 3) Volta para a página inicial através do callback onSuccess
+      if (onSuccess) onSuccess();
     } catch (err) {
-      console.error('RegisterForm error', err); // Log de erros
+      console.error('RegisterForm error', err); // Imprime o erro no console para debugging
       setError(err.message || 'Erro no cadastro'); // Define a mensagem de erro a ser exibida
     }
   };
 
-  // Renderiza o formulário de registro.
+  // Renderiza o formulário de registro
   return (
     <div className={styles.container}>
       <form onSubmit={onSubmit} className={styles.form}>
-        <h2 >Cadastro</h2>
-        {/* Exibe a mensagem de erro, se houver */}
-        {error && <div className={styles.form} >{error}</div>}
+        <h2>Cadastro</h2>
+        {/* Exibe a mensagem de erro, se existir */}
+        {error && <div className={styles.error}>{error}</div>}
 
+        {/* Campos do formulário */}
         <input
           placeholder="Username"
           value={username}
-          onChange={e => setUsername(e.target.value)}
-          required // Campo obrigatório
+          onChange={(e) => setUsername(e.target.value)}
+          required
           className={styles.formInput}
         />
         <input
           type="email"
           placeholder="Email"
           value={email}
-          onChange={e => setEmail(e.target.value)}
-          required // Campo obrigatório
+          onChange={(e) => setEmail(e.target.value)}
+          required
+          className={styles.formInput}
+        />
+        <input
+          type="text"
+          placeholder="Nome"
+          value={firstName}
+          onChange={(e) => setFirstName(e.target.value)}
+          required
+          className={styles.formInput}
+        />
+        <input
+          type="text"
+          placeholder="Sobrenome"
+          value={lastName}
+          onChange={(e) => setLastName(e.target.value)}
+          required
+          className={styles.formInput}
+        />
+        <input
+          type="text"
+          placeholder="Telefone"
+          value={phone}
+          onChange={(e) => setPhone(e.target.value)}
+          required
           className={styles.formInput}
         />
         <input
           type="password"
           placeholder="Password"
           value={password}
-          onChange={e => setPassword(e.target.value)}
-          required // Campo obrigatório
+          onChange={(e) => setPassword(e.target.value)}
+          required
           className={styles.formInput}
         />
         <input
           type="password"
           placeholder="Confirm Password"
           value={confirmPassword}
-          onChange={e => setConfirmPass(e.target.value)} // Campo de confirmação de senha
-          required // Campo obrigatório
+          onChange={(e) => setConfirmPass(e.target.value)}
+          required
           className={styles.formInput}
         />
 
-        <button type="submit" className={styles.button}>Registrar</button> {/* Botão para enviar o formulário */}
+        {/* Botão de envio do formulário */}
+        <button type="submit" className={styles.button}>
+          Registrar
+        </button>
       </form>
     </div>
   );
 }
+
