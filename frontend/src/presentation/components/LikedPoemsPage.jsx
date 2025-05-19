@@ -1,74 +1,94 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import PoemService from '../../application/PoemService';
-import styles from '../../styles/LikedPoems.module.css';
+import React, { useState, useEffect, useCallback } from 'react';
+import { Link } from 'react-router-dom'; // Importa o componente Link do React Router para navegação
+import PoemService from '../../application/PoemService'; // Importa o serviço para buscar poemas
+import PoemSearch from '../components/PoemSearch'; // Importa o componente de busca de poemas
+import styles from '../../styles/LikedPoems.module.css'; // Importa os estilos CSS do componente
 
 /**
  * Componente LikedPoems:
  *
- * Este componente React tem como responsabilidade exibir os poemas que o usuário
- * autenticado atualmente curtiu. Ele busca esses poemas do backend e os apresenta
- * em um formato de lista de cards, onde cada card representa um poema.
+ * Exibe todos os poemas curtidos pelo usuário e permite buscar por título ou autor.
+ * - Sem texto na busca: lista completa.
+ * - Com texto: apenas resultados da busca.
+ * @param {Object} props - Propriedades do componente.
+ * @returns {JSX.Element} Componente LikedPoems.
+ * @throws {Error} Se ocorrer um erro ao carregar os poemas.
  */
 export default function LikedPoems() {
-  const [poems, setPoems] = useState([]); // Estado para armazenar a lista de poemas curtidos pelo usuário. Inicializado como um array vazio.
-  const [error, setError] = useState(null); // Estado para armazenar qualquer erro que ocorra durante a busca dos poemas. Inicializado como null.
-  const navigate = useNavigate(); // Hook do React Router para permitir a navegação entre páginas.
+  const [poems, setPoems] = useState([]);       // Estado para armazenar a lista de poemas curtidos
+  const [error, setError] = useState(null);       // Estado para armazenar mensagens de erro
+  const [filtered, setFiltered] = useState([]);   // Estado para armazenar os resultados filtrados da busca
+  const [searchText, setSearchText] = useState(''); // Estado para armazenar o texto da busca
 
-  // useEffect: Hook que executa uma função assincronamente quando o componente é montado.
+  // Efeito para carregar os poemas curtidos ao montar o componente
   useEffect(() => {
     async function loadLiked() {
       try {
-        // Chama o serviço PoemService para obter a lista de poemas curtidos pelo usuário.
-        // Assume que PoemService.listLiked() retorna uma Promise que resolve com um array de objetos PoemDto.
-        const data = await PoemService.listLiked();
-        setPoems(data); // Atualiza o estado 'poems' com os dados recebidos do serviço.
+        const data = await PoemService.listLiked(); // Busca os poemas curtidos usando o serviço
+        setPoems(data); // Atualiza o estado com os poemas curtidos
       } catch (e) {
-        // Se ocorrer um erro durante a chamada ao serviço, atualiza o estado 'error' com a mensagem de erro.
-        // A mensagem de erro pode vir diretamente do servidor (e.message) ou ser uma mensagem padrão.
-        setError(e.message || 'Erro ao carregar poemas curtidos');
+        setError(e.message || 'Erro ao carregar poemas curtidos'); // Define o erro, se ocorrer
       }
     }
-    loadLiked(); // Chama a função loadLiked para iniciar o processo de busca dos poemas.
-  }, []); // O array vazio como segundo argumento garante que este efeito é executado apenas uma vez, na montagem do componente.
+    loadLiked(); // Chama a função para carregar os poemas
+  }, []);
 
-  // Função para lidar com o clique no botão "Leia Mais" de um poema.
-  // Redireciona o usuário para a página de detalhes do poema, usando o ID do poema como parte da URL.
-  const handleReadMore = (id) => navigate(`/poems/${id}`);
+  const hasSearch = searchText.trim().length > 0; // Verifica se há texto na busca
 
-  // Renderização condicional:
-  // Se houver um erro, exibe uma mensagem de erro.
-  if (error) return <p className={styles.error}>{error}</p>;
-  // Se não houver poemas curtidos, exibe uma mensagem informando que o usuário ainda não curtiu nenhum poema.
-  if (!poems.length) return <p className={styles.empty}>Você ainda não curtiu nenhum poema.</p>;
+  // Função para lidar com a busca de poemas (recebe do PoemSearch)
+  const handleSearch = useCallback((results, text) => {
+    // Evita atualizações infinitas se os valores não mudarem
+    setFiltered((prev) => (prev === results ? prev : results));
+    setSearchText((prev) => (prev === text ? prev : text));
+  }, []);
 
-  // Se não houver erros e houver poemas curtidos, renderiza a lista de poemas em cards.
+  // Renderiza mensagem de erro, se houver
+  if (error) {
+    return <p className={styles.error}>{error}</p>;
+  }
+
+  // Renderiza mensagem se o usuário não curtiu nenhum poema
+  if (!poems.length) {
+    return <p className={styles.empty}>Você ainda não curtiu nenhum poema.</p>;
+  }
+
+  // Função para renderizar um card de poema
+  const renderCard = (poem) => (
+    <div key={poem.id} className={styles.card}>
+      {/* Exibe a imagem do poema */}
+      <img src={poem.imageUrl} alt={poem.title} className={styles.image} />
+      <div className={styles.content}>
+        {/* Exibe o título do poema */}
+        <h3 className={styles.title}>{poem.title}</h3>
+        {/* Exibe o autor do poema */}
+        <p className={styles.author}>por {poem.author}</p>
+        {/* Exibe um trecho do poema */}
+        <p className={styles.excerpt}>
+          {(poem.text || '').split('\n')[0]}...
+        </p>
+        {/* Link para a página de detalhes do poema */}
+        <Link
+          to={`/poems/${poem.id}`}
+          className={styles.readMore}
+          role="button"
+        >
+          Leia Mais
+        </Link>
+      </div>
+    </div>
+  );
+
+  // Renderiza o componente
   return (
-    <div className={styles.container}>
-      {/* Mapeia o array de poemas e renderiza um card para cada poema. */}
-      {poems.map((poem) => (
-        <div key={poem.id} className={styles.card}>
-          {/* Exibe a imagem do poema. */}
-          <img src={poem.imageUrl} alt={poem.title} className={styles.image} />
-          <div className={styles.content}>
-            {/* Exibe o título do poema. */}
-            <h3 className={styles.title}>{poem.title}</h3>
-            {/* Exibe o autor do poema. */}
-            <p className={styles.author}>por {poem.author}</p>
-            {/* Exibe um trecho do poema (a primeira linha). */}
-            <p className={styles.excerpt}>
-              {(poem.text || '').split('\n')[0]}...
-            </p>
-            {/* Botão "Leia Mais" que redireciona para a página de detalhes do poema. */}
-            <button
-              onClick={() => handleReadMore(poem.id)}
-              className={styles.readMore}
-            >
-              Leia Mais
-            </button>
-          </div>
-        </div>
-      ))}
+    <div>
+      {/* Componente de busca de poemas */}
+      <PoemSearch poems={poems} onSearch={handleSearch} />
+
+      {/* Container para exibir os poemas */}
+      <div className={styles.container}>
+        {/* Renderiza os poemas (filtrados ou todos) */}
+        {(hasSearch ? filtered : poems).map(renderCard)}
+      </div>
     </div>
   );
 }

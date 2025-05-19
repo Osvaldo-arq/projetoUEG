@@ -3,16 +3,15 @@
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   gap: 1.5rem;
   padding: 1rem;
-  background-color: #f5f5f5;
 }
 
 .card {
-  background-color: #ffffff;
-  border-radius: 8px;
-  overflow: hidden;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  background: #fff;
+  border-radius: 0.5rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
   display: flex;
   flex-direction: column;
+  overflow: hidden;
 }
 
 .image {
@@ -29,36 +28,62 @@
 }
 
 .title {
+  margin: 0;
   font-size: 1.25rem;
-  margin: 0 0 0.5rem;
-  color: #333333;
 }
 
 .author {
+  margin: 0.5rem 0;
+  color: #555;
   font-size: 0.9rem;
-  color: #666666;
-  margin-bottom: 0.75rem;
 }
 
 .excerpt {
-  font-size: 0.95rem;
-  color: #555555;
   flex: 1;
-  margin-bottom: 1rem;
+  color: #333;
+  font-size: 0.95rem;
 }
 
 .readMore {
   align-self: flex-start;
-  padding: 0.5rem 1rem;
-  background-color: #777777;
-  color: #ffffff;
+  margin-top: 1rem;
+  background: #555;
+  color: #fff;
   border: none;
-  border-radius: 4px;
-  font-size: 0.9rem;
+  padding: 0.5rem 1rem;
+  border-radius: 0.25rem;
   cursor: pointer;
-  transition: background-color 0.2s;
+}
+.readMore:hover {
+  background:  black;
 }
 
-.readMore:hover {
-  background-color: #555555;
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 1rem;
+  gap: 0.5rem;
+}
+
+.pageButton {
+  background: #f0f0f0;
+  border: none;
+  padding: 0.5rem 0.75rem;
+  cursor: pointer;
+  border-radius: 0.25rem;
+}
+.pageButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.active {
+  background: #2563eb;
+  color: #fff;
+}
+
+.error {
+  text-align: center;
+  color: red;
+  margin: 1rem;
 }

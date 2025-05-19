@@ -1,76 +1,71 @@
-import React, { useContext } from 'react';
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'; // Importa componentes do React Router
-import { AuthContext } from './context/AuthContext'; // Importa o contexto de autenticação
-import LoginForm from './presentation/components/LoginForm';       // Importa o componente LoginForm
-import RegisterForm from './presentation/components/RegisterForm';     // Importa o componente RegisterForm
-import DashboardUser from './presentation/pages/DashboardUser';     // Importa o componente DashboardUser
-import DashboardAdmin from './presentation/pages/DashboardAdmin';   // Importa o componente DashboardAdmin
-import HomePage from './presentation/pages/HomePage';           // Importa o componente HomePage
-import PoemsByDate from './presentation/components/PoemsByDate';
-import PoemDetail from './presentation/components/PoemDetail';
-import LikedPoemsPage from './presentation/components/LikedPoemsPage';   // Importa a página de poemas curtidos
+import React, { useContext } from 'react'; // Importa React e useContext.
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'; // Importa componentes do React Router.
+import { AuthContext } from './context/AuthContext'; // Importa o contexto de autenticação.
+
+import HomePage from './presentation/pages/HomePage'; // Importa a página inicial.
+import PoemsByDate from './presentation/components/PoemsByDate'; // Importa o componente de poemas por data.
+import PoemDetail from './presentation/components/PoemDetail'; // Importa o componente de detalhes do poema.
+import LikedPoemsPage from './presentation/components/LikedPoemsPage'; // Importa a página de poemas curtidos.
+import LoginForm from './presentation/components/LoginForm'; // Importa o formulário de login.
+import RegisterForm from './presentation/components/RegisterForm'; // Importa o formulário de registro.
+import DashboardUser from './presentation/pages/DashboardUser'; // Importa o dashboard do usuário.
+import DashboardAdmin from './presentation/pages/DashboardAdmin'; // Importa o dashboard do administrador.
 
 /**
- * Componente App:
- *
- * Este é o componente principal da aplicação React. Ele configura o roteamento da aplicação
- * usando o BrowserRouter e define as rotas para diferentes páginas e componentes.
+ * Componente principal da aplicação.
+ * Define as rotas da aplicação e gerencia a navegação.
+ * @param {Object} props - Propriedades do componente.
  */
 export default function App() {
-  const { user } = useContext(AuthContext); // Obtém o objeto 'user' do contexto de autenticação
-  const token = user?.token; // Obtém o token do usuário (se existir)
-  const role = user?.role;   // Obtém a role do usuário (se existir)
+  const { user } = useContext(AuthContext); // Obtém o usuário do contexto de autenticação.
+  const token = user?.token; // Obtém o token do usuário, se existir.
+  const role = user?.role; // Obtém a role do usuário, se existir.
 
+  // Renderiza a estrutura de roteamento da aplicação.
   return (
     <BrowserRouter>
       <Routes>
-        {/* Página pública inicial, acessível a todos */}
-        <Route path="/" element={<HomePage />} />
-        {/* Página de lista de poemas ordenados por data, acessível a todos */}
-        <Route path="/poems-by-date" element={<PoemsByDate />} />
-        {/* Página de detalhes de um poema, acessível a todos */}
-        <Route path="/poems/:id" element={<PoemDetail />} />
-        {/* Página de poemas curtidos pelo usuário, protegida */}
-      <Route
-        path="/liked-poems"
-        element={
-          token ? <LikedPoemsPage /> : <Navigate to="/login" replace />
-        }
-      />
+        {/* Rotas públicas (acessíveis a todos). */}
+        <Route path="/" element={<HomePage />} /> {/* Rota para a página inicial. */}
+        <Route path="/poems-by-date" element={<PoemsByDate />} /> {/* Rota para a página de poemas por data. */}
+        <Route path="/poems/:id" element={<PoemDetail />} /> {/* Rota para a página de detalhes do poema. */}
 
-        {/* Rotas de autenticação, acessíveis a usuários não autenticados */}
-        <Route path="/login" element={<LoginForm />} />
-        <Route path="/register" element={<RegisterForm />} />
+        {/* Rota protegida: Poemas curtidos (requer autenticação). */}
+        <Route
+          path="/liked-poems"
+          element={token ? <LikedPoemsPage /> : <Navigate to="/login" replace />}
+          // Se o usuário estiver autenticado (token existir), renderiza LikedPoemsPage;
+          // caso contrário, redireciona para a página de login.
+        />
 
-        {/* Dashboards protegidos, acessíveis apenas a usuários autenticados com a role correta */}
+        {/* Rotas de autenticação. */}
+        <Route path="/login" element={<LoginForm />} /> {/* Rota para o formulário de login. */}
+        <Route path="/register" element={<RegisterForm />} /> {/* Rota para o formulário de registro. */}
+
+        {/* Rotas dos dashboards (protegidas por autenticação e role). */}
         <Route
           path="/admin/dashboard"
           element={
-            // Se o usuário estiver autenticado e for um administrador, renderiza o DashboardAdmin
-            token && role === 'ADMIN' ? (
-              <DashboardAdmin />
-            ) : (
-              // Caso contrário, redireciona para a página de login
-              <Navigate to="/login" replace />
-            )
+            token && role === 'ADMIN'
+              ? <DashboardAdmin />
+              : <Navigate to="/login" replace />
           }
+          // Acessível apenas a usuários autenticados com a role 'ADMIN'.
         />
         <Route
           path="/user/dashboard"
           element={
-            // Se o usuário estiver autenticado e for um usuário comum, renderiza o DashboardUser
-            token && role === 'USER' ? (
-              <DashboardUser />
-            ) : (
-              // Caso contrário, redireciona para a página de login
-              <Navigate to="/login" replace />
-            )
+            token && role === 'USER'
+              ? <DashboardUser />
+              : <Navigate to="/login" replace />
           }
+          // Acessível apenas a usuários autenticados com a role 'USER'.
         />
 
-        {/* Rota curinga para lidar com URLs não encontradas, redireciona para a página inicial */}
+        {/* Rota catch-all: Redireciona para a página inicial para qualquer rota não correspondente. */}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </BrowserRouter>
   );
 }
+
