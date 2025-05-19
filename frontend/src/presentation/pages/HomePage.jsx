@@ -30,14 +30,7 @@ const HomePage = () => {
         // Renderiza a seção principal da página inicial
         return (
           <section className={styles.main}>
-            <h1>Bem-vindo ao App</h1>
-            <p>Explore, comente e curta belos poemas compartilhados por nossa comunidade.</p>
-            <button
-                onClick={() => setView('poems')}
-                className={styles.button}
-              >
-                Poemas
-              </button>
+            <h1>Bem-vindo a Homepage</h1>
           </section>
         );
     }
