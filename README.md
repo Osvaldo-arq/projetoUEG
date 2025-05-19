@@ -149,30 +149,72 @@ Este repositório contém o frontend em React para o sistema de poemas. Implemen
 * **🔗 Fetch API:** Comunicação com o backend via HTTP.  
 * **💅 CSS:** Estilos globais simples.  
 
-## 📂 Estrutura de Pastas
+## 📂 Estrutura de Pastas (Frontend)
+
 ```
-poem-frontend/
+frontend/
 ├── public/
-│   └── index.html                   # HTML base
+│   ├── favicon.ico
+│   ├── index.html                # HTML base
+│   ├── logo192.png
+│   ├── logo512.png
+│   ├── manifest.json
+│   └── robots.txt
 ├── src/
-│   ├── domain/                      # Entidades de domínio
-│   │   └── User.js                  # Modelo de usuário
-│   ├── application/                 # Serviços de aplicação (use cases)
-│   │   └── AuthService.js           # Lógica de login/cadastro
-│   ├── infrastructure/              # Adaptadores de infra (HTTP client)
-│   │   └── HttpClient.js            # Fetch wrappers
-│   ├── presentation/                # Partes visuais e rotas
-│   │   ├── components/              # Componentes reutilizáveis
-│   │   │   ├── LoginForm.jsx
-│   │   │   └── RegisterForm.jsx
-│   │   ├── pages/                   # Páginas principais
-│   │   │   ├── DashboardUser.jsx
-│   │   │   └── DashboardAdmin.jsx
-│   │   ├── App.jsx                  # Configuração de rotas
-│   │   └── index.js                 # Ponto de entrada React
+│   ├── App.jsx                   # Componente principal e rotas
+│   ├── App.test.js               # Testes do App
+│   ├── index.js                  # Ponto de entrada React
+│   ├── index.css                 # Estilos globais
+│   ├── logo.svg
+│   ├── reportWebVitals.js
+│   ├── setupTests.js
+│   ├── application/              # Serviços de aplicação (use cases)
+│   │   ├── AuthService.js        # Lógica de autenticação (login/cadastro)
+│   │   ├── CommentService.js     # Consome endpoints de comentários
+│   │   ├── LikeService.js        # Consome endpoints de curtidas
+│   │   ├── PoemService.js        # Consome endpoints de poemas
+│   │   ├── ProfileService.js     # Consome endpoints de perfis
+│   │   └── UserService.js        # Consome endpoints de usuários
+│   ├── context/
+│   │   └── AuthContext.jsx       # Contexto global de autenticação
+│   ├── domain/
+│   │   └── User.js               # Modelo de usuário
+│   ├── infrastructure/
+│   │   ├── HttpClient.js         # Wrapper para fetch autenticado
+│   │   └── jwt.js                # Utilitários para JWT
+│   ├── presentation/
+│   │   ├── components/
+│   │   │   ├── LoginForm.jsx         # Formulário de login
+│   │   │   ├── RegisterForm.jsx      # Formulário de cadastro
+│   │   │   ├── Sidebar.jsx           # Barra lateral de navegação
+│   │   │   ├── PoemList.jsx          # Lista de poemas (tabela)
+│   │   │   ├── PoemForm.jsx          # Formulário de poema
+│   │   │   ├── ProfileList.jsx       # Lista de perfis (tabela)
+│   │   │   ├── ProfileForm.jsx       # Formulário de perfil
+│   │   │   ├── UserList.jsx          # Lista de usuários (tabela)
+│   │   │   ├── UserForm.jsx          # Formulário de usuário
+│   │   │   ├── PoemsByDate.jsx       # Lista de poemas por data (com paginação)
+│   │   │   ├── PoemDetail.jsx        # Detalhes de um poema
+│   │   │   └── LikedPoemsPage.jsx    # Lista de poemas curtidos pelo usuário
+│   │   ├── layouts/
+│   │   │   └── ...                   # (Reservado para layouts reutilizáveis)
+│   │   ├── pages/
+│   │   │   ├── DashboardUser.jsx     # Dashboard do usuário comum
+│   │   │   ├── DashboardAdmin.jsx    # Dashboard do administrador
+│   │   │   └── HomePage.jsx          # Página inicial
 │   └── styles/
-│       └── global.css               # Estilos globais
-└── .gitignore                       # Arquivos ignorados pelo Git
+│       ├── global.css
+│       ├── DashboardAdmin.module.css
+│       ├── DashboardUser.module.css
+│       ├── PoemForm.module.css
+│       ├── PoemList.module.css
+│       ├── ProfileList.module.css
+│       ├── Sidebar.module.css
+│       ├── UserForm.module.css
+│       ├── UserList.module.css
+│       └── PoemsByDate.module.css
+├── package.json
+└── .gitignore
 ```
 
 ## ✨ Funcionalidades Implementadas
@@ -186,15 +228,34 @@ poem-frontend/
 * **👤 Dashboards:**  
   * **Dashboard User:** Interface básica para usuários comuns.  
   * **Dashboard Admin:** Interface dedicada para administradores.  
+* **🧩 Componentes de Interface:**  
+  * 📜 `PoemForm.jsx` / `PoemList.jsx` — CRUD de poemas (admin e usuário)  
+  * 👤 `ProfileForm.jsx` / `ProfileList.jsx` — CRUD de perfis  
+  * 🧑‍💼 `UserForm.jsx` / `UserList.jsx` — CRUD de usuários (admin)  
+  * 📅 `PoemsByDate.jsx` — Lista poemas ordenados por data com paginação  
+  * 📖 `PoemDetail.jsx` — Exibe detalhes completos de um poema  
+  * ❤️ `LikedPoemsPage.jsx` — Lista poemas curtidos pelo usuário autenticado  
+  * 📚 `Sidebar.jsx` — Navegação lateral para dashboards  
+  * 📊 `DashboardUser.jsx` / `DashboardAdmin.jsx` — Painéis completos para cada tipo de usuário (USER e ADMIN)
+* **🔐 Autenticação e Estado:**  
+  * 🔒 `AuthContext.jsx` — Gerencia autenticação global e estado do usuário
+* **🌐 Comunicação com a API:**  
+  * 🧠 `application/` — Serviços de aplicação para consumir a API REST (PoemService, ProfileService etc.)  
+  * 🔌 `infrastructure/HttpClient.js` — Wrapper para requisições HTTP com fetch + token
+* **🎨 Estilo:**  
+  * 🎨 `styles/` — CSS modular individualizado para cada componente ou página (ex: `PoemDetail.module.css`, `DashboardAdmin.module.css`)
 
 ## ⚙️ Rotas do Frontend
 
-| Rota            | Componente         | Descrição                                    |
-|-----------------|--------------------|----------------------------------------------|
-| `/login`        | `LoginForm.jsx`    | Tela de login                                |
-| `/register`     | `RegisterForm.jsx` | Tela de cadastro                             |
-| `/dashboard`    | `DashboardUser` ou `DashboardAdmin` | Exibe dashboard de acordo com o `role` |
-
+| Rota              | Componente                    | Descrição                                                  |
+|-------------------|-------------------------------|-------------------------------------------------------------|
+| `/login`          | `LoginForm.jsx`               | Tela de login                                               |
+| `/register`       | `RegisterForm.jsx`            | Tela de cadastro                                            |
+| `/user/dashboard` | `DashboardUser.jsx`           | Painel do usuário comum                                     |
+| `/admin/dashboard`| `DashboardAdmin.jsx`          | Painel administrativo                                       |
+| `/poems/:id`      | `PoemDetail.jsx`              | Exibe detalhes completos de um poema                        |
+| `/poems-by-date`  | `PoemsByDate.jsx`             | Lista poemas por data, com paginação                       |
+| `/liked-poems`    | `LikedPoemsPage.jsx`          | Lista poemas curtidos pelo usuário autenticado             |
 ## 📦 Scripts Disponíveis
 
 No diretório do projeto, execute:
