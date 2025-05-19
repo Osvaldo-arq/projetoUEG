@@ -292,7 +292,4 @@ Para apontar ao backend, use:
 
 ## ⏭️ Próximos Passos
 
-* Adicionar formulários de poema e comentário.  
-* Consumir endpoints de CRUD de poemas, perfis, comentários e curtidas.  
 * Melhorar estilos e usabilidade.  
-* Implementar testes automatizados.  
