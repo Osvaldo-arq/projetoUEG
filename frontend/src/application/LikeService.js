@@ -2,35 +2,65 @@ import HttpClient from '../infrastructure/HttpClient';
 const API = '';
 
 const LikeService = {
-  countLikes: (poemId) =>
-    HttpClient.get(`${API}/api/poems/${poemId}/likes`, localStorage.getItem('token')),
-
-  hasLiked: async (poemId) => {
-    try {
-      const response = await HttpClient.get(
-        `${API}/api/poems/${poemId}/likes/user`,
-        localStorage.getItem('token')
-      );
-      // Assumindo que a API retorna um objeto JSON com a chave 'liked' (boolean)
-      return response.liked;
-    } catch (error) {
-      console.error('Erro ao verificar se curtiu:', error);
-      return false; // Em caso de erro na requisição, assume que não curtiu
-    }
+  /**
+   * Retorna o número de curtidas de um poema.
+   * @param {number|string} poemId
+   * @returns {Promise<number>}
+   */
+  countLikes: async (poemId) => {
+    const token = localStorage.getItem('token');
+    const count = await HttpClient.get(
+      `${API}/api/poems/${poemId}/likes`,
+      token
+    );
+    return count;
   },
 
-  like: (poemId) =>
-    HttpClient.post(
+  /**
+   * Verifica se o usuário atualmente logado já curtiu o poema.
+   * @param {number|string} poemId
+   * @returns {Promise<boolean>}
+   */
+hasLiked: async (poemId) => {
+  try {
+    // Retorna diretamente o booleano retornado pela API
+    return await HttpClient.get(
+      `${API}/api/poems/${poemId}/likes/user`,
+      localStorage.getItem('token')
+    );
+  } catch (error) {
+    console.error('Erro ao verificar se curtiu:', error);
+    return false;
+  }
+},
+
+
+  /**
+   * Adiciona uma curtida ao poema.
+   * @param {number|string} poemId
+   * @returns {Promise<void>}
+   */
+  like: async (poemId) => {
+    const token = localStorage.getItem('token');
+    await HttpClient.post(
       `${API}/api/poems/${poemId}/like`,
       null,
-      localStorage.getItem('token')
-    ),
+      token
+    );
+  },
 
-  unlike: (poemId) =>
-    HttpClient.delete(
+  /**
+   * Remove a curtida do poema.
+   * @param {number|string} poemId
+   * @returns {Promise<void>}
+   */
+  unlike: async (poemId) => {
+    const token = localStorage.getItem('token');
+    await HttpClient.delete(
       `${API}/api/poems/${poemId}/like`,
-      localStorage.getItem('token')
-    ),
+      token
+    );
+  },
 };
 
 export default LikeService;

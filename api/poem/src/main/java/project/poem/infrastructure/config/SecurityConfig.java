@@ -49,19 +49,16 @@ public class SecurityConfig {
             .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             // Definição de autorização por endpoint
             .authorizeHttpRequests(auth -> auth
-                // Permite acesso a todos os usuários
-                .requestMatchers("/api/auth/**").permitAll()
-                // libera somente GET em /api/comments e GET /api/comments/{poemId}
-                .requestMatchers(HttpMethod.GET, "/api/comments/**").permitAll()
-                // libera somente GET em /api/poems e GET /api/poems/{id}
+                // Open endpoints
+                .requestMatchers(HttpMethod.POST, "/api/auth/**").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/auth/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/poems/**").permitAll()
-                // Permite acesso a todos os usuários, mas com autenticação
+                .requestMatchers(HttpMethod.GET, "/api/profile/**").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/comments/**").permitAll()
+                // Protected endpoints
                 .requestMatchers("/api/poems/**").hasAnyRole("USER", "ADMIN")
-                // Permite acesso a todos os usuários, mas com autenticação
                 .requestMatchers("/api/profile/**").hasAnyRole("USER", "ADMIN")
-                // Permite acesso a todos os usuários, mas com autenticação
                 .requestMatchers("/api/comments/**").hasAnyRole("USER", "ADMIN")
-                // Permite acesso a todos os usuários, mas com autenticação
                 .anyRequest().authenticated()
             )
             // Usa nosso UserDetailsService para carregar usuários

@@ -6,8 +6,9 @@ import RegisterForm from './presentation/components/RegisterForm';     // Import
 import DashboardUser from './presentation/pages/DashboardUser';     // Importa o componente DashboardUser
 import DashboardAdmin from './presentation/pages/DashboardAdmin';   // Importa o componente DashboardAdmin
 import HomePage from './presentation/pages/HomePage';           // Importa o componente HomePage
-import PoemsByDate from './presentation/components/PoemsByDate'; 
-import PoemDetail from './presentation/components/PoemDetail'; 
+import PoemsByDate from './presentation/components/PoemsByDate';
+import PoemDetail from './presentation/components/PoemDetail';
+import LikedPoemsPage from './presentation/components/LikedPoemsPage';   // Importa a página de poemas curtidos
 
 /**
  * Componente App:
@@ -25,12 +26,21 @@ export default function App() {
       <Routes>
         {/* Página pública inicial, acessível a todos */}
         <Route path="/" element={<HomePage />} />
-        {/* Página de poemas, acessível a todos */}
+        {/* Página de lista de poemas ordenados por data, acessível a todos */}
+        <Route path="/poems-by-date" element={<PoemsByDate />} />
+        {/* Página de detalhes de um poema, acessível a todos */}
         <Route path="/poems/:id" element={<PoemDetail />} />
+        {/* Página de poemas curtidos pelo usuário, protegida */}
+      <Route
+        path="/liked-poems"
+        element={
+          token ? <LikedPoemsPage /> : <Navigate to="/login" replace />
+        }
+      />
+
         {/* Rotas de autenticação, acessíveis a usuários não autenticados */}
         <Route path="/login" element={<LoginForm />} />
         <Route path="/register" element={<RegisterForm />} />
-        <Route path="/poems-by-date" element={<PoemsByDate />} />
 
         {/* Dashboards protegidos, acessíveis apenas a usuários autenticados com a role correta */}
         <Route

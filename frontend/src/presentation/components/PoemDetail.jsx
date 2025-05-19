@@ -1,258 +1,301 @@
-import React, { useState, useEffect, useContext } from 'react'; // Importa funcionalidades do React: estado, efeitos e contexto
-import { useParams, useNavigate } from 'react-router-dom'; // Importa hooks para acessar parâmetros da rota e navegar
-import PoemService from '../../application/PoemService'; // Importa o serviço para buscar dados de poemas
-import LikeService from '../../application/LikeService'; // Importa o serviço para lidar com curtidas
-import CommentService from '../../application/CommentService'; // Importa o serviço para lidar com comentários
-import { AuthContext } from '../../context/AuthContext'; // Importa o contexto de autenticação
-import styles from '../../styles/PoemDetail.module.css'; // Importa os estilos CSS para este componente
-import Navbar from '../components/Navbar'; // Importa o componente da barra de navegação
+import React, { useState, useEffect, useContext } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import PoemService from '../../application/PoemService';
+import LikeService from '../../application/LikeService';
+import CommentService from '../../application/CommentService';
+import { AuthContext } from '../../context/AuthContext';
+import styles from '../../styles/PoemDetail.module.css'; // Importa os estilos CSS
 
-export default function PoemDetail({ onChangeView }) { // Define o componente funcional PoemDetail, recebendo onChangeView (para navegação interna)
-  const { id: poemIdFromRoute } = useParams(); // Obtém o valor do parâmetro 'id' da URL e o renomeia para poemIdFromRoute
-  const navigate = useNavigate(); // Hook para obter a função de navegação
-  const { user, authLoading, authRestored } = useContext(AuthContext); // Acessa os valores do contexto de autenticação: informações do usuário, estado de carregamento da autenticação e se a autenticação foi restaurada
+/**
+ * @component
+ * @description Componente funcional para exibir os detalhes de um poema, incluindo curtidas e comentários,
+ * com um estilo visual comum em sites de poesia.
+ *
+ * @param {object} props - As propriedades do componente.
+ * @param {function} props.onChangeView - Função para manipular a mudança de visualização (passada do componente pai).
+ *
+ * @returns {JSX.Element} Elemento JSX representando os detalhes do poema estilizado.
+ */
+export default function PoemDetail({ onChangeView }) {
+  /**
+   * @constant {object} routeParams - Objeto contendo os parâmetros da rota.
+   * @property {string} id - O ID do poema extraído da URL.
+   */
+  const { id: poemIdFromRoute } = useParams();
+  const navigate = useNavigate();
+  /**
+   * @constant {object} auth - Objeto contendo informações do contexto de autenticação.
+   * @property {object | null} user - Informações do usuário logado (se houver).
+   * @property {boolean} authLoading - Indica se o estado de autenticação está sendo carregado.
+   * @property {boolean} authRestored - Indica se o estado de autenticação foi restaurado.
+   */
+  const { user, authLoading, authRestored } = useContext(AuthContext);
 
-  // Estados locais do componente para gerenciar os dados e a interface
-  const [poem, setPoem] = useState(null); // Estado para armazenar os detalhes do poema
-  const [likes, setLikes] = useState(0); // Estado para armazenar o número de curtidas do poema
-  const [liked, setLiked] = useState(null); // Estado para indicar se o usuário atual curtiu o poema (true/false/null para carregando)
-  const [comments, setComments] = useState([]); // Estado para armazenar a lista de comentários do poema
-  const [newComment, setNewComment] = useState(''); // Estado para controlar o texto do novo comentário que o usuário está digitando
-  const [editingCommentId, setEditingCommentId] = useState(null); // Estado para armazenar o ID do comentário que está sendo editado
-  const [editText, setEditText] = useState(''); // Estado para armazenar o texto do comentário durante a edição
-  const [error, setError] = useState(null); // Estado para armazenar qualquer mensagem de erro que ocorra durante as chamadas de API
-  const [loadingPoem, setLoadingPoem] = useState(true); // Estado para indicar se os dados do poema estão sendo carregados da API
-  const [checkingLike, setCheckingLike] = useState(true); // Estado para indicar se a verificação da curtida do usuário está em andamento
+  // Estados locais do componente
+  const [poem, setPoem] = useState(null);
+  const [likes, setLikes] = useState(0);
+  const [liked, setLiked] = useState(null);
+  const [comments, setComments] = useState([]);
+  const [newComment, setNewComment] = useState('');
+  const [editingCommentId, setEditingCommentId] = useState(null);
+  const [editText, setEditText] = useState('');
+  const [error, setError] = useState(null);
+  const [loadingPoem, setLoadingPoem] = useState(true);
+  const [checkingLike, setCheckingLike] = useState(true);
 
-  const poemId = poemIdFromRoute; // Define uma variável poemId com o valor obtido da rota
+  const poemId = poemIdFromRoute;
 
-  // useEffect: Executa efeitos colaterais no componente. Neste caso, carrega os dados do poema quando o componente é montado ou quando poemId muda.
+  /**
+   * @useEffect
+   * @description Carrega os dados do poema e a contagem de curtidas ao montar o componente ou quando o ID do poema muda.
+   */
   useEffect(() => {
     async function loadPoemData() {
-      setLoadingPoem(true); // Define o estado de carregamento como verdadeiro ao iniciar a busca
-      setError(null); // Limpa qualquer erro anterior
+      setLoadingPoem(true);
+      setError(null);
       try {
-        const data = await PoemService.getById(poemId); // Chama a função do serviço para buscar os detalhes do poema pelo ID
-        setPoem(data); // Atualiza o estado do poema com os dados recebidos
-        const count = await LikeService.countLikes(poemId); // Chama a função do serviço para obter a contagem de curtidas do poema
-        setLikes(count); // Atualiza o estado de curtidas com a contagem recebida
+        const data = await PoemService.getById(poemId);
+        setPoem(data);
+        const count = await LikeService.countLikes(poemId);
+        setLikes(count);
       } catch (e) {
-        setError(e.message || 'Erro ao carregar poema'); // Se ocorrer um erro, atualiza o estado de erro
+        setError(e.message || 'Erro ao carregar poema');
       } finally {
-        setLoadingPoem(false); // Define o estado de carregamento como falso após a conclusão da busca (com sucesso ou falha)
+        setLoadingPoem(false);
       }
     }
-
-    if (poemId) { // Garante que poemId tenha um valor antes de tentar carregar os dados
-      loadPoemData(); // Chama a função para carregar os dados do poema
+    if (poemId) {
+      loadPoemData();
     }
-  }, [poemId]); // A dependência [poemId] garante que este efeito seja executado novamente se o ID do poema na rota mudar
+  }, [poemId]);
 
-  // useEffect: Executa a verificação se o usuário atual curtiu o poema. Depende do ID do poema e do estado de autenticação.
+  /**
+   * @useEffect
+   * @description Verifica se o usuário atual curtiu o poema ao montar o componente ou quando o ID do poema ou o estado de autenticação mudam.
+   */
   useEffect(() => {
     async function checkLikedStatus() {
-      if (authRestored && !authLoading && user?.token) { // Verifica se a autenticação foi restaurada, não está carregando e o usuário possui um token
-        setCheckingLike(true); // Define o estado de verificação de curtida como verdadeiro
+      if (authRestored && !authLoading && user?.token) {
+        setCheckingLike(true);
         try {
-          const hasLikedStatusResult = await LikeService.hasLiked(poemId); // Chama o serviço para verificar se o usuário curtiu o poema
-          setLiked(hasLikedStatusResult); // Atualiza o estado liked com o resultado da verificação
+          const hasLikedStatusResult = await LikeService.hasLiked(poemId);
+          setLiked(hasLikedStatusResult);
         } catch (error) {
           console.error('Erro ao verificar se curtiu:', error);
-          setLiked(false); // Em caso de erro, assume que o usuário não curtiu
+          setLiked(false);
         } finally {
-          setCheckingLike(false); // Define o estado de verificação de curtida como falso após a conclusão
+          setCheckingLike(false);
         }
       } else {
-        setLiked(false); // Se a autenticação não estiver pronta ou não houver token, assume que o usuário não curtiu
+        setLiked(false);
         setCheckingLike(false);
       }
     }
+    checkLikedStatus();
+  }, [poemId, user, authLoading, authRestored]);
 
-    checkLikedStatus(); // Chama a função para verificar o status da curtida
-  }, [poemId, user, authLoading, authRestored]); // Dependências: executa novamente se algum desses valores mudar
-
-  // useEffect: Carrega os comentários associados ao poema. Executa quando o componente é montado ou quando poemId muda.
+  /**
+   * @useEffect
+   * @description Carrega os comentários do poema ao montar o componente ou quando o ID do poema muda.
+   */
   useEffect(() => {
     async function loadComments() {
       try {
-        const comms = await CommentService.listByPoem(poemId); // Chama o serviço para obter a lista de comentários do poema
-        setComments(comms); // Atualiza o estado de comentários com a lista recebida
+        const comms = await CommentService.listByPoem(poemId);
+        setComments(comms);
       } catch (err) {
         console.error('Erro ao carregar comentários:', err);
-        setComments([]); // Em caso de erro, define a lista de comentários como um array vazio
+        setComments([]);
       }
     }
-
-    if (poemId) { // Garante que poemId tenha um valor antes de tentar carregar os comentários
-      loadComments(); // Chama a função para carregar os comentários
+    if (poemId) {
+      loadComments();
     }
-  }, [poemId]); // A dependência [poemId] garante que este efeito seja executado novamente se o ID do poema mudar
+  }, [poemId]);
 
-  // Função assíncrona para lidar com a ação de curtir ou descurtir o poema
+  /**
+   * @function toggleLike
+   * @description Alterna a curtida do poema pelo usuário atual.
+   * Se o usuário não estiver logado, redireciona para a página de login.
+   */
   const toggleLike = async () => {
-    if (!user?.token) return navigate('/login'); // Se não houver token de usuário, redireciona para a página de login
+    if (!user?.token) return navigate('/login');
     try {
-      const optimisticLiked = !liked; // Atualiza o estado de curtida local de forma otimista (antes da resposta da API)
+      const optimisticLiked = !liked;
       setLiked(optimisticLiked);
-      setLikes(prevLikes => (optimisticLiked ? prevLikes + 1 : prevLikes - 1)); // Atualiza a contagem de curtidas local de forma otimista
+      setLikes(prevLikes => (optimisticLiked ? prevLikes + 1 : prevLikes - 1));
 
       if (optimisticLiked) {
-        await LikeService.like(poemId); // Chama o serviço para curtir o poema na API
+        await LikeService.like(poemId);
       } else {
-        await LikeService.unlike(poemId); // Chama o serviço para descurtir o poema na API
+        await LikeService.unlike(poemId);
       }
     } catch (e) {
       console.error('Erro ao alternar like:', e);
-      setLiked(!liked); // Em caso de erro, reverte o estado de curtida local
-      setLikes(prevLikes => (!liked ? prevLikes + 1 : prevLikes - 1)); // Em caso de erro, reverte a contagem de curtidas local
+      setLiked(!liked);
+      setLikes(prevLikes => (!liked ? prevLikes + 1 : prevLikes - 1));
     }
   };
 
-  // Função assíncrona para lidar com o envio de um novo comentário
+  /**
+   * @function submitComment
+   * @description Envia um novo comentário para o poema.
+   * Se o usuário não estiver logado, redireciona para a página de login.
+   * @param {object} e - O objeto de evento do formulário.
+   */
   const submitComment = async e => {
-    e.preventDefault(); // Evita o comportamento padrão de envio do formulário (recarregar a página)
-    if (!user?.token) return navigate('/login'); // Se não houver token de usuário, redireciona para a página de login
+    e.preventDefault();
+    if (!user?.token) return navigate('/login');
     try {
       const dto = {
         poemId: poemId,
         content: newComment
       };
-      const created = await CommentService.create(dto); // Chama o serviço para criar o novo comentário na API
-      setComments(prev => [created, ...prev]); // Atualiza o estado de comentários local, adicionando o novo comentário ao início da lista
-      setNewComment(''); // Limpa o campo de texto do novo comentário
+      const created = await CommentService.create(dto);
+      setComments(prev => [created, ...prev]);
+      setNewComment('');
     } catch (e) {
-      setError(e.message || 'Erro ao enviar comentário'); // Em caso de erro, atualiza o estado de erro
+      setError(e.message || 'Erro ao enviar comentário');
     }
   };
 
-  // Função para preparar a edição de um comentário específico
+  // Inicia a edição de um comentário específico
   const handleEditComment = (comment) => {
-    setEditingCommentId(comment.id); // Define o ID do comentário que está sendo editado
-    setEditText(comment.content); // Preenche o campo de edição com o texto atual do comentário
+    setEditingCommentId(comment.id);
+    setEditText(comment.content);
   };
 
-  // Função assíncrona para salvar a edição de um comentário
+  /**
+   * @function handleSaveEdit
+   * @description Salva a edição de um comentário existente.
+   * Se o usuário não estiver logado, redireciona para a página de login.
+   * @param {string} commentId - O ID do comentário a ser salvo.
+   */
   const handleSaveEdit = async (commentId) => {
-    if (!user?.token) return navigate('/login'); // Se não houver token de usuário, redireciona para a página de login
+    if (!user?.token) return navigate('/login');
     try {
-      await CommentService.update(commentId, { content: editText }); // Chama o serviço para atualizar o comentário na API
+      await CommentService.update(commentId, { content: editText });
       const updatedComments = comments.map(c =>
-        c.id === commentId ? { ...c, content: editText } : c // Atualiza o texto do comentário na lista local de comentários
+        c.id === commentId ? { ...c, content: editText } : c
       );
-      setComments(updatedComments); // Atualiza o estado de comentários com a lista modificada
-      setEditingCommentId(null); // Limpa o ID do comentário sendo editado
-      setEditText(''); // Limpa o campo de texto de edição
+      setComments(updatedComments);
+      setEditingCommentId(null);
+      setEditText('');
     } catch (error) {
-      setError(error.message || 'Erro ao editar comentário'); // Em caso de erro, atualiza o estado de erro
+      setError(error.message || 'Erro ao editar comentário');
     }
   };
 
-  // Função para cancelar a edição de um comentário
+  // Cancela a edição de um comentário
   const handleCancelEdit = () => {
-    setEditingCommentId(null); // Limpa o ID do comentário sendo editado
-    setEditText(''); // Limpa o campo de texto de edição
+    setEditingCommentId(null);
+    setEditText('');
   };
 
-  // Função assíncrona para apagar um comentário
+  /**
+   * @function handleDeleteComment
+   * @description Apaga um comentário específico.
+   * Se o usuário não estiver logado, redireciona para a página de login.
+   * Solicita confirmação ao usuário antes de apagar o comentário.
+   * @param {string} commentId - O ID do comentário a ser apagado.
+   */
   const handleDeleteComment = async (commentId) => {
-    if (!user?.token) return navigate('/login'); // Se não houver token de usuário, redireciona para a página de login
-    if (window.confirm('Tem certeza que deseja apagar este comentário?')) { // Exibe uma caixa de confirmação para o usuário
+    if (!user?.token) return navigate('/login');
+    if (window.confirm('Tem certeza que deseja apagar este comentário?')) {
       try {
-        await CommentService.delete(commentId); // Chama o serviço para apagar o comentário da API
-        const updatedComments = comments.filter(c => c.id !== commentId); // Filtra a lista local de comentários, removendo o comentário apagado
-        setComments(updatedComments); // Atualiza o estado de comentários com a lista modificada
+        await CommentService.delete(commentId);
+        const updatedComments = comments.filter(c => c.id !== commentId);
+        setComments(updatedComments);
       } catch (error) {
-        setError(error.message || 'Erro ao apagar comentário'); // Em caso de erro, atualiza o estado de erro
+        setError(error.message || 'Erro ao apagar comentário');
       }
     }
   };
 
-  // Renderização condicional para exibir mensagens de erro ou tela de carregamento
-  if (error) return <p className={styles.error}>{error}</p>; // Se houver um erro, exibe a mensagem de erro
-  if (loadingPoem || !poem) return <p className={styles.loading}>Carregando poema...</p>; // Se os dados do poema estiverem carregando ou ainda não tiverem sido carregados, exibe uma mensagem de carregamento
+  // Renderização condicional para erros
+  if (error) return <p className={styles.error}>{error}</p>;
+  // Renderização condicional para tela de carregamento
+  if (loadingPoem || !poem) return <p className={styles.loading}>Carregando poema...</p>;
 
-  // Renderização principal do componente PoemDetail
   return (
-    <div>
-      <Navbar onChangeView={onChangeView} /> {/* Renderiza o componente Navbar, passando a função onChangeView para lidar com mudanças de visualização (se necessário) */}
-      <div className={styles.container}>
-        <img src={poem.imageUrl} alt={poem.title} className={styles.image} /> {/* Exibe a imagem do poema */}
-        <h1 className={styles.title}>{poem.title}</h1> {/* Exibe o título do poema */}
-        <p className={styles.author}>por {poem.author}</p> {/* Exibe o autor do poema */}
-        <div className={styles.textContent}>
-          {(poem.text || '').split("\n").map((line, idx) => ( // Divide o texto do poema por quebras de linha e renderiza cada linha em um <p>
-            <p key={idx}>{line}</p>
-          ))}
-        </div>
+    <div className={styles.container}> {/* Aplica o estilo de container */}
+      <img src={poem.imageUrl} alt={poem.title} className={styles.image} /> {/* Aplica o estilo de imagem */}
+      <h1 className={styles.title}>{poem.title}</h1> {/* Aplica o estilo de título */}
+      <p className={styles.author}>por {poem.author}</p> {/* Aplica o estilo de autor */}
+      <div className={styles.textContent}> {/* O nome da classe 'content' foi alterado para 'textContent' no seu código */}
+        {/* O estilo para parágrafos já está definido em '.content p' */}
+        {(poem.text || '').split("\n").map((line, idx) => (
+          <p key={idx}>{line}</p>
+        ))}
+      </div>
 
-        <div className={styles.actions}>
-          <button
-            type="button"
-            onClick={toggleLike}
-            className={styles.likeButton}
-            disabled={authLoading || checkingLike || liked === null} // Desabilita o botão de curtir durante o carregamento da autenticação, verificação de curtida ou se o estado de curtida for desconhecido
-          >
-            {liked === true ? 'Descurtir' : 'Curtir'} ({likes}) {/* Exibe o texto do botão com base no estado de curtida e a contagem de curtidas */}
-          </button>
-          {(authLoading || checkingLike) && <span className={styles.loading}>Verificando...</span>} {/* Exibe uma mensagem de carregamento durante a verificação da curtida */}
-        </div>
+      <div className={styles.actions}> {/* Aplica o estilo para as ações */}
+        <button
+          type="button"
+          onClick={toggleLike}
+          className={styles.likeButton} // Aplica o estilo do botão de curtir
+          disabled={authLoading || checkingLike || liked === null}
+        >
+          {liked === true ? 'Descurtir' : 'Curtir'} ({likes})
+        </button>
+        {(authLoading || checkingLike) && <span className={styles.loading}>Verificando...</span>}
+      </div>
 
-        <div className={styles.commentSection}>
-          <h2>Comentários</h2>
-          {user?.token ? ( // Se o usuário estiver autenticado (possui um token), exibe o formulário de comentário
-            <form onSubmit={submitComment} className={styles.commentForm}>
-              <textarea
-                value={newComment}
-                onChange={e => setNewComment(e.target.value)}
-                required
-                placeholder="Escreva seu comentário..."
-              />
-              <button type="submit" disabled={authLoading}>Enviar</button> {/* Desabilita o botão de enviar durante o carregamento da autenticação */}
-            </form>
+      <div className={styles.commentSection}> {/* Aplica o estilo da seção de comentários */}
+        <h2>Comentários</h2>
+        {user?.token ? (
+          <form onSubmit={submitComment} className={styles.commentForm}> {/* Aplica o estilo do formulário de comentário */}
+            <textarea
+              value={newComment}
+              onChange={e => setNewComment(e.target.value)}
+              required
+              placeholder="Escreva seu comentário..."
+            />
+            <button type="submit" disabled={authLoading}>Enviar</button> {/* O estilo do botão de comentário já está definido em '.commentForm button' */}
+          </form>
+        ) : (
+          <p className={styles.loginPrompt} onClick={() => navigate('/login')}>
+            Faça login para comentar
+          </p>
+        )}
+
+        <ul className={styles.commentList}> {/* Aplica o estilo da lista de comentários */}
+          {comments.length > 0 ? (
+            comments.map(c => (
+              <li key={c.id} className={styles.commentItem}> {/* Aplica o estilo de cada item de comentário */}
+                <div>
+                  <strong>{c.author || 'Anônimo'}</strong>
+                  <em>{c.commentDate || ''}</em>
+                  {user?.token && user.id === c.authorId && (
+                    <div className={styles.commentActions}>
+                      {editingCommentId === c.id ? (
+                        <>
+                          <input
+                            type="text"
+                            value={editText}
+                            onChange={e => setEditText(e.target.value)}
+                          />
+                          <button onClick={() => handleSaveEdit(c.id)}>Salvar</button>
+                          <button onClick={handleCancelEdit}>Cancelar</button>
+                        </>
+                      ) : (
+                        <>
+                          <button onClick={() => handleEditComment(c)}>Editar</button>
+                          <button onClick={() => handleDeleteComment(c.id)}>Apagar</button>
+                        </>
+                      )}
+                    </div>
+                  )}
+                </div>
+                <div>
+                  {editingCommentId === c.id ? null : c.content}
+                </div>
+              </li>
+            ))
           ) : (
-            <p className={styles.loginPrompt} onClick={() => navigate('/login')}>
-              Faça login para comentar
-            </p>
+            <p className={styles.noComments}>Nenhum comentário ainda.</p>
           )}
-
-          <ul className={styles.commentList}>
-            {comments.length > 0 ? ( // Se houver comentários na lista, os renderiza
-              comments.map(c => (
-                <li key={c.id} className={styles.commentItem}>
-                  <div>
-                    <strong>{c.author || 'Anônimo'}</strong> {/* Exibe o autor do comentário ou 'Anônimo' se não houver */}
-                    <em>{c.commentDate || ''}</em> {/* Exibe a data do comentário */}
-                    {user?.token && user.id === c.authorId && ( // Se o usuário estiver autenticado e for o autor deste comentário, exibe as ações de edição e exclusão
-                      <div className={styles.commentActions}>
-                        {editingCommentId === c.id ? ( // Se este comentário estiver sendo editado, exibe os controles de edição
-                          <>
-                            <input
-                              type="text"
-                              value={editText}
-                              onChange={e => setEditText(e.target.value)}
-                            />
-                            <button onClick={() => handleSaveEdit(c.id)}>Salvar</button>
-                            <button onClick={handleCancelEdit}>Cancelar</button>
-                          </>
-                        ) : ( // Caso contrário, exibe os botões de editar e apagar
-                          <>
-                            <button onClick={() => handleEditComment(c)}>Editar</button>
-                            <button onClick={() => handleDeleteComment(c.id)}>Apagar</button>
-                          </>
-                        )}
-                      </div>
-                    )}
-                  </div>
-                  <div>
-                    {editingCommentId === c.id ? null : c.content} {/* Exibe o conteúdo do comentário, ou nada se estiver em modo de edição */}
-                  </div>
-                </li>
-              ))
-            ) : (
-              <p className={styles.noComments}>Nenhum comentário ainda.</p>
-            )}
-          </ul>
-        </div>
+        </ul>
       </div>
     </div>
   );

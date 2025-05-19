@@ -1,62 +1,146 @@
-.container {
-  max-width: 600px;
-  margin: auto;
+:local(.container) {
+  max-width: 800px;
+  margin: 2rem auto;
   padding: 1rem;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
-.image {
-  width: 100%;
-  border-radius: 0.5rem;
+
+:local(.image) {
+  width: 150px;
+  border-radius: 4px;
   object-fit: cover;
-}
-.title {
-  font-size: 2rem;
-  margin-top: 1rem;
-}
-.author {
-  color: #555;
   margin-bottom: 1rem;
 }
-.content p {
-  margin-bottom: 0.75rem;
-  line-height: 1.5;
+
+:local(.title) {
+  font-size: 2rem;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 0.5rem;
 }
-.actions {
-  margin: 1rem 0;
+
+:local(.author) {
+  font-size: 1rem;
+  color: #666;
+  margin-bottom: 1.5rem;
 }
-.likeButton {
-  background: #2563eb;
-  color: #fff;
+
+:local(.textContent) {
+  font-size: 1rem;
+  line-height: 1.6;
+  color: #444;
+  margin-bottom: 2rem;
+}
+
+:local(.actions) {
+  display: flex;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+:local(.likeButton) {
+  background-color: #e0e0e0;
   border: none;
   padding: 0.5rem 1rem;
-  border-radius: 0.25rem;
+  border-radius: 4px;
+  font-size: 1rem;
+  color: #333;
   cursor: pointer;
+  margin-right: 1rem;
 }
-.commentSection {
-  margin-top: 2rem;
+
+:local(.likeButton:hover) {
+  background-color: #d0d0d0;
 }
-.commentForm textarea {
-  width: 100%;
-  height: 80px;
+
+:local(.loading) {
+  font-size: 0.9rem;
+  color: #999;
+}
+
+:local(.commentSection) {
+  border-top: 1px solid #ddd;
+  padding-top: 1.5rem;
+}
+
+:local(.commentForm) {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 1.5rem;
+}
+
+:local(.commentForm) textarea {
+  resize: vertical;
+  min-height: 80px;
   padding: 0.5rem;
   border: 1px solid #ccc;
-  border-radius: 0.25rem;
-  resize: none;
+  border-radius: 4px;
+  margin-bottom: 0.5rem;
+  font-family: inherit;
 }
-.commentForm button {
-  margin-top: 0.5rem;
-  padding: 0.5rem 1rem;
-  background: #10b981;
-  color: #fff;
+
+:local(.commentForm) button {
+  align-self: flex-end;
+  background-color: #e0e0e0;
   border: none;
-  border-radius: 0.25rem;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
   cursor: pointer;
 }
-.commentList {
+
+:local(.commentForm) button:hover {
+  background-color: #d0d0d0;
+}
+
+:local(.loginPrompt) {
+  font-size: 1rem;
+  color: #007acc;
+  cursor: pointer;
+  margin-bottom: 1rem;
+}
+
+:local(.commentList) {
   list-style: none;
   padding: 0;
-  margin-top: 1rem;
 }
-.commentItem {
-  padding: 0.5rem 0;
-  border-bottom: 1px solid #e5e7eb;
+
+:local(.commentItem) {
+  padding: 0.75rem 0;
+  border-bottom: 1px solid #eee;
+}
+
+:local(.commentItem) strong {
+  color: #333;
+  margin-right: 0.5rem;
+}
+
+:local(.commentItem) em {
+  font-size: 0.85rem;
+  color: #888;
+  margin-left: 0.5rem;
+}
+
+:local(.commentActions) {
+  margin-top: 0.5rem;
+}
+
+:local(.commentActions) button {
+  background: none;
+  border: none;
+  color: #007acc;
+  cursor: pointer;
+  margin-right: 0.5rem;
+  font-size: 0.9rem;
+}
+
+:local(.commentActions) button:hover {
+  text-decoration: underline;
+}
+
+:local(.noComments) {
+  color: #666;
+  font-size: 1rem;
+  margin-top: 0.5rem;
 }

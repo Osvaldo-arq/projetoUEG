@@ -1,12 +1,14 @@
 package project.poem.application.service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import project.poem.application.dto.PoemDto;
 import project.poem.domain.model.Poem;
+import project.poem.domain.repository.PoemLikeRepository;
 import project.poem.domain.repository.PoemRepository;
 
 /**
@@ -16,14 +18,16 @@ import project.poem.domain.repository.PoemRepository;
 public class PoemService {
 
     private final PoemRepository poemRepo;
+    private final PoemLikeRepository poemLikeRepository;
 
     /**
      * Construtor para injetar a dependência de PoemRepository.
      *
      * @param poemRepo O repositório para acessar os dados dos poemas.
      */
-    public PoemService(PoemRepository poemRepo) {
+    public PoemService(PoemRepository poemRepo, PoemLikeRepository poemLikeRepository) {
         this.poemRepo = poemRepo;
+        this.poemLikeRepository = poemLikeRepository;
     }
 
     /**
@@ -105,5 +109,18 @@ public class PoemService {
         dto.setImageUrl(p.getImageUrl());
         dto.setPostDate(p.getPostDate());
         return dto;
+    }
+    /**
+     * Lista todos os poemas curtidos por um usuário.
+     *
+     * @param userId ID do usuário autenticado
+     * @return Lista de PoemDto representando os poemas curtidos
+     */
+    @Transactional(readOnly = true)
+    public List<PoemDto> listLikedForUser(Long userId) {
+        return poemLikeRepository.findAll().stream()
+                .filter(pl -> pl.getUser().getId().equals(userId))
+                .map(pl -> toDto(pl.getPoem()))
+                .collect(Collectors.toList());
     }
 }
