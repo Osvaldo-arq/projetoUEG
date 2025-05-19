@@ -45,12 +45,22 @@ export default function Navbar({ onChangeView }) {
         {/* Poemas - Mesmos component de Recentes */}
         <li>
           <button
-            onClick={() => onChangeView && onChangeView('poems')}
+            onClick={() => onChangeView && onChangeView('poems-by-date')}
             className={styles.authButton}
           >
             Poemas
           </button>
         </li>
+        {(user?.token && (user.role === 'USER' || user.role === 'ADMIN')) && (
+          <li>
+            <button
+              onClick={() => onChangeView && onChangeView('liked-poems')}
+              className={styles.authButton}
+          >
+            Curtidas
+          </button>
+        </li>
+        )}
 
         {/* Dashboards protegidos */}
         {user?.token && user.role === 'USER' && (

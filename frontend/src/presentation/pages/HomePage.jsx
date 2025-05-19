@@ -4,6 +4,7 @@ import styles from '../../styles/HomePage.module.css'; // Importa os estilos CSS
 import LoginForm from '../components/LoginForm'; // Importa o componente LoginForm
 import RegisterForm from '../components/RegisterForm'; // Importa o componente RegisterForm
 import PoemsByDate from '../components/PoemsByDate';
+import LikedPoemsPage from '../components/LikedPoemsPage';
 
 /**
  * Componente HomePage:
@@ -21,8 +22,10 @@ const HomePage = () => {
         return <LoginForm />; // Renderiza o formulário de login
       case 'register':
         return <RegisterForm onSuccess={() => setView('login')} />; // Renderiza o formulário de registro e define a view para 'login' após o sucesso
-      case 'poems':
+      case 'poems-by-date':
         return <PoemsByDate />; 
+      case 'liked-poems':
+        return <LikedPoemsPage />
         default:
         // Renderiza a seção principal da página inicial
         return (
