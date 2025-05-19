@@ -44,7 +44,7 @@
 }
 
 .button {
-  background-color: #28a745; /* Cor verde para registrar */
+  background-color: #555; 
   color: white;
   border: none;
   padding: 12px 20px;
@@ -55,5 +55,5 @@
 }
 
 .button:hover {
-  background-color: #1e7e34;
+  background-color: black;
 }

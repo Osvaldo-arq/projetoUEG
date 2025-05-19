@@ -6,6 +6,8 @@ import RegisterForm from './presentation/components/RegisterForm';     // Import
 import DashboardUser from './presentation/pages/DashboardUser';     // Importa o componente DashboardUser
 import DashboardAdmin from './presentation/pages/DashboardAdmin';   // Importa o componente DashboardAdmin
 import HomePage from './presentation/pages/HomePage';           // Importa o componente HomePage
+import PoemsByDate from './presentation/components/PoemsByDate'; 
+import PoemDetail from './presentation/components/PoemDetail'; 
 
 /**
  * Componente App:
@@ -23,10 +25,12 @@ export default function App() {
       <Routes>
         {/* Página pública inicial, acessível a todos */}
         <Route path="/" element={<HomePage />} />
-
+        {/* Página de poemas, acessível a todos */}
+        <Route path="/poems/:id" element={<PoemDetail />} />
         {/* Rotas de autenticação, acessíveis a usuários não autenticados */}
         <Route path="/login" element={<LoginForm />} />
         <Route path="/register" element={<RegisterForm />} />
+        <Route path="/poems-by-date" element={<PoemsByDate />} />
 
         {/* Dashboards protegidos, acessíveis apenas a usuários autenticados com a role correta */}
         <Route

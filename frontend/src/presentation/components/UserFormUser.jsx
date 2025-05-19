@@ -71,26 +71,6 @@ const UserForm = ({ user, onSubmit, onCancel }) => {
       <h2>{user ? 'Editar Usuário' : 'Novo Usuário'}</h2>
       <form onSubmit={handleSubmit}>
         <div>
-          <label htmlFor="username">Username:</label>
-          <input
-            type="text"
-            id="username"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            required
-          />
-        </div>
-        <div>
-          <label htmlFor="email">Email:</label>
-          <input
-            type="email"
-            id="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
-        </div>
-        <div>
           <label htmlFor="password">Nova Password:</label>
           <input
             type="password"

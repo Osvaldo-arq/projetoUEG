@@ -15,18 +15,18 @@ const AuthService = {
   login: async (username, password) => {
     const payload = { username, password };
     // Envia uma requisição POST para o endpoint de login da API.
-    const res = await HttpClient.post(`${API}/auth/login`, payload);
+    const response = await HttpClient.post(`${API}/auth/login`, payload);
 
     // Verifica se a resposta da API indica sucesso (status 200-299).
-    if (!res.ok) {
-      // Se a resposta não for OK, obtém o texto do erro da resposta.
-      const errorText = await res.text();
+    if (!response.ok) {
+      // Se a resposta não for OK, obtém o JSON do erro da resposta.
+      const errorData = await response.json();
       // Lança um erro com a mensagem de erro da API ou uma mensagem padrão.
-      throw new Error(errorText || 'Falha no login');
+      throw new Error(errorData?.message || 'Falha no login');
     }
 
     // Se o login for bem-sucedido, obtém os dados da resposta.  Espera-se que seja um JSON contendo token e email.
-    const responseData = await res.json();
+    const responseData = await response.json();
     const { token, email } = responseData;
 
     // Decodifica o token JWT para obter os claims (informações) do usuário, incluindo o role.
@@ -54,19 +54,19 @@ const AuthService = {
   register: async (username, email, password) => {
     const payload = { username, email, password, confirmPassword: password, role: 'USER' };
     // Envia uma requisição POST para o endpoint de registro da API.
-    const res = await HttpClient.post(`${API}/auth/register`, payload);
+    const response = await HttpClient.post(`${API}/auth/register`, payload);
 
     // Verifica se a resposta da API indica sucesso (status 200-299).
-    if (!res.ok) {
-      // Se a resposta não for OK, obtém o texto do erro da resposta.
-      const errorText = await res.text();
+    if (!response.ok) {
+      // Se a resposta não for OK, obtém o JSON do erro da resposta.
+      const errorData = await response.json();
       // Lança um erro com a mensagem de erro da API ou uma mensagem padrão.
-      throw new Error(errorText || 'Falha no registro');
+      throw new Error(errorData?.message || 'Falha no registro');
     }
 
-    // Se o registro for bem-sucedido, obtém o token da resposta.
-    const responseData = await res.text();
-    return responseData;
+    // Se o registro for bem-sucedido, obtém o token da resposta. Espera-se que seja um texto (o token).
+    const token = await response.text();
+    return token;
   },
 };
 

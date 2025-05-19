@@ -20,7 +20,7 @@ const UserList = ({ users, onEdit, onDelete }) => {
               <th>ID</th>
               <th>Username</th>
               <th>Email</th>
-              <th>Ações</th>
+              <th>Mudar senha</th>
             </tr>
           </thead>
           <tbody>

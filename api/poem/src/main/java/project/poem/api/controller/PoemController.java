@@ -1,12 +1,14 @@
 package project.poem.api.controller;
 
-
 import java.util.List;
 
 import javax.validation.Valid;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -18,6 +20,8 @@ import org.springframework.web.bind.annotation.RestController;
 import project.poem.application.dto.PoemDto;
 import project.poem.application.service.LikeService;
 import project.poem.application.service.PoemService;
+import project.poem.domain.model.User;
+import project.poem.domain.repository.UserRepository; // Import UserRepository
 
 /**
  * Controlador REST para operações relacionadas a poemas.
@@ -29,15 +33,19 @@ public class PoemController {
 
     private final PoemService poemService;
     private final LikeService likeService;
+    private final UserRepository userRepository; // Adiciona UserRepository
 
     /**
-     * Construtor para injetar a dependência de PoemService.
+     * Construtor para injetar as dependências necessárias.
      *
      * @param poemService O serviço responsável pela lógica de negócios dos poemas.
+     * @param likeService O serviço responsável pela lógica de negócios das curtidas.
+     * @param userRepository O repositório para acessar os dados dos usuários.
      */
-    public PoemController(PoemService poemService, LikeService likeService) {
+    public PoemController(PoemService poemService, LikeService likeService, UserRepository userRepository) {
         this.poemService = poemService;
         this.likeService = likeService;
+        this.userRepository = userRepository;
     }
 
     /**
@@ -125,5 +133,29 @@ public class PoemController {
     public ResponseEntity<Long> countLikes(@PathVariable Long id) {
         long total = likeService.countLikes(id);
         return ResponseEntity.ok(total);
+    }
+
+    /**
+     * Endpoint para verificar se o usuário autenticado curtiu um poema específico.
+     * O usuário deve estar autenticado para realizar esta verificação.
+     * @param id O ID do poema a ser verificado.
+     * @return ResponseEntity contendo um booleano (true se curtiu, false caso contrário) com status 200 (OK).
+     */
+    @GetMapping("/{id}/likes/user")
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+    public ResponseEntity<Boolean> hasUserLiked(@PathVariable Long id) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth == null || !auth.isAuthenticated()) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
+        String username = auth.getName();
+        User user = userRepository.findByUsername(username).orElse(null);
+
+        if (user == null) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
+
+        boolean liked = likeService.hasLiked(id, user.getId());
+        return ResponseEntity.ok(liked);
     }
 }

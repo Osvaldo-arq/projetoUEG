@@ -48,7 +48,7 @@
 }
 
 .button {
-  background-color: #007bff;
+  background-color: #555;
   color: white;
   border: none;
   padding: 12px 20px;
@@ -59,7 +59,7 @@
 }
 
 .button:hover {
-  background-color: #0056b3;
+  background-color:  black;
 }
 
 .button:disabled {

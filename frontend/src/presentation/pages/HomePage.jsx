@@ -3,6 +3,7 @@ import Navbar from '../components/Navbar'; // Importa o componente Navbar
 import styles from '../../styles/HomePage.module.css'; // Importa os estilos CSS do componente
 import LoginForm from '../components/LoginForm'; // Importa o componente LoginForm
 import RegisterForm from '../components/RegisterForm'; // Importa o componente RegisterForm
+import PoemsByDate from '../components/PoemsByDate';
 
 /**
  * Componente HomePage:
@@ -20,13 +21,20 @@ const HomePage = () => {
         return <LoginForm />; // Renderiza o formulário de login
       case 'register':
         return <RegisterForm onSuccess={() => setView('login')} />; // Renderiza o formulário de registro e define a view para 'login' após o sucesso
-      default:
+      case 'poems':
+        return <PoemsByDate />; 
+        default:
         // Renderiza a seção principal da página inicial
         return (
           <section className={styles.main}>
             <h1>Bem-vindo ao App</h1>
             <p>Explore, comente e curta belos poemas compartilhados por nossa comunidade.</p>
-            <a href="/poems" className={styles.button}>Ver Poemas</a>
+            <button
+                onClick={() => setView('poems')}
+                className={styles.button}
+              >
+                Poemas
+              </button>
           </section>
         );
     }

@@ -53,11 +53,14 @@ public class CommentController {
      * @param dto Objeto CommentDto contendo os dados do novo comentário.
      * @return ResponseEntity contendo o CommentDto criado com status 200 (OK).
      */
-    @PreAuthorize("hasRole('ROLE_ADMIN') or @commentService.isAuthorOfComment(authentication.name, #dto.id)")
     @PostMapping
-    public ResponseEntity<CommentDto> create(@RequestBody CommentDto dto) {
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+    public ResponseEntity<CommentDto> create(@RequestBody CommentDto dto, org.springframework.security.core.Authentication authentication) {
+        dto.setAuthor(authentication.getName());      // Define o autor com base no usuário autenticado
+        dto.setCommentDate(java.time.LocalDate.now()); // Define a data atual
         return ResponseEntity.ok(commentService.create(dto));
     }
+
 
     /**
      * Endpoint para atualizar um comentário existente.

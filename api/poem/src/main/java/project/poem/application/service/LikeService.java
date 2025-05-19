@@ -40,10 +40,10 @@ public class LikeService {
     /**
      * Curte um poema.
      * Este método é executado em uma transação.
+     * Se o usuário já curtiu o poema, a operação é ignorada silenciosamente.
      *
      * @param poemId O ID do poema a ser curtido.
      * @throws IllegalArgumentException Se o usuário ou o poema não forem encontrados.
-     * @throws IllegalStateException    Se o usuário já tiver curtido o poema.
      */
     @Transactional
     public void likePoem(Long poemId) {
@@ -58,16 +58,17 @@ public class LikeService {
         Poem poem = poemRepo.findById(poemId)
                 .orElseThrow(() -> new IllegalArgumentException("Poema não encontrado: " + poemId));
 
-        // Verifica se o usuário já curtiu o poema.
-        likeRepo.findByPoemIdAndUserId(poemId, user.getId())
-            .ifPresent(pl -> {
-                throw new IllegalStateException("Já curtido");
-            });
+        // Verifica se o usuário já curtiu o poema. Se já curtiu, não faz nada.
+        if (likeRepo.findByPoemIdAndUserId(poemId, user.getId()).isPresent()) {
+            return; // Sai do método sem fazer nada
+        }
 
         // Cria uma nova entidade PoemLike para representar a curtida.
         PoemLike like = new PoemLike();
         like.setPoem(poem);
         like.setUser(user);
+        // Define o nome de usuário do liker
+        like.setLikerUsername(user.getUsername());
         // Salva a curtida no banco de dados.
         likeRepo.save(like);
     }
@@ -114,5 +115,17 @@ public class LikeService {
         // Usa o repositório para contar as curtidas do poema.
         return likeRepo.countByPoemId(poemId);
     }
-}
 
+    /**
+     * Verifica se um usuário específico curtiu um poema específico.
+     * Este método é executado em uma transação somente leitura.
+     *
+     * @param poemId O ID do poema a ser verificado.
+     * @param userId O ID do usuário a ser verificado.
+     * @return true se o usuário curtiu o poema, false caso contrário.
+     */
+    @Transactional(readOnly = true)
+    public boolean hasLiked(Long poemId, Long userId) {
+        return likeRepo.findByPoemIdAndUserId(poemId, userId).isPresent();
+    }
+}

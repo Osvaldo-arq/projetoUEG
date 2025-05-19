@@ -32,6 +32,10 @@ export default function Sidebar({
         {isMinimized ? <FaBars /> : <FaTimes />}  {/* Exibe ícone de barra quando minimizada, X quando maximizada */}
       </button>
 
+      {/* Botão para retornar à homepage */}
+      <button onClick={goHome} className={styles.logoutButton}>
+        Home
+      </button>
       {/* Navegação da barra lateral */}
       <nav>
         {/* Botão para a seção de gerenciamento de poemas */}
@@ -42,18 +46,10 @@ export default function Sidebar({
         <button onClick={() => setSection('users')} className={styles.navButton}>Gerenciar Usuários</button>
       </nav>
 
-      {/* Botões de ação na base da sidebar */}
-      <div className={styles.bottomButtons}>
-        {/* Botão para retornar à homepage */}
-        <button onClick={goHome} className={styles.navButton}>
-          Home
-        </button>
-
         {/* Botão de logout */}
         <button onClick={handleLogout} className={styles.logoutButton}>
           Logout
         </button>
-      </div>
     </aside>
   );
 }

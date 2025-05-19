@@ -1,0 +1,89 @@
+.container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.5rem;
+  padding: 1rem;
+}
+
+.card {
+  background: #fff;
+  border-radius: 0.5rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.image {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+}
+
+.content {
+  padding: 1rem;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.title {
+  margin: 0;
+  font-size: 1.25rem;
+}
+
+.author {
+  margin: 0.5rem 0;
+  color: #555;
+  font-size: 0.9rem;
+}
+
+.excerpt {
+  flex: 1;
+  color: #333;
+  font-size: 0.95rem;
+}
+
+.readMore {
+  align-self: flex-start;
+  margin-top: 1rem;
+  background: #555;
+  color: #fff;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 0.25rem;
+  cursor: pointer;
+}
+.readMore:hover {
+  background:  black;
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 1rem;
+  gap: 0.5rem;
+}
+
+.pageButton {
+  background: #f0f0f0;
+  border: none;
+  padding: 0.5rem 0.75rem;
+  cursor: pointer;
+  border-radius: 0.25rem;
+}
+.pageButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.active {
+  background: #2563eb;
+  color: #fff;
+}
+
+.error {
+  text-align: center;
+  color: red;
+  margin: 1rem;
+}

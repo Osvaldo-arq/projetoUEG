@@ -54,60 +54,42 @@ public class PoemLike {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
+    /**
+     * Nome de usuário do usuário que curtiu o poema.
+     */
+    private String likerUsername;
+
     // Getters e Setters
 
-    /**
-     * Obtém o ID da curtida.
-     *
-     * @return O ID da curtida.
-     */
     public Long getId() {
         return id;
     }
 
-    /**
-     * Define o ID da curtida.
-     *
-     * @param id O ID da curtida a ser definido.
-     */
     public void setId(Long id) {
         this.id = id;
     }
 
-    /**
-     * Obtém o poema que foi curtido.
-     *
-     * @return O poema que foi curtido.
-     */
     public Poem getPoem() {
         return poem;
     }
 
-    /**
-     * Define o poema que foi curtido.
-     *
-     * @param poem O poema a ser definido.
-     */
     public void setPoem(Poem poem) {
         this.poem = poem;
     }
 
-    /**
-     * Obtém o usuário que curtiu o poema.
-     *
-     * @return O usuário que curtiu o poema.
-     */
     public User getUser() {
         return user;
     }
 
-    /**
-     * Define o usuário que curtiu o poema.
-     *
-     * @param user O usuário a ser definido.
-     */
     public void setUser(User user) {
         this.user = user;
     }
-}
 
+    public String getLikerUsername() {
+        return likerUsername;
+    }
+
+    public void setLikerUsername(String likerUsername) {
+        this.likerUsername = likerUsername;
+    }
+}

@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -50,6 +51,10 @@ public class SecurityConfig {
             .authorizeHttpRequests(auth -> auth
                 // Permite acesso a todos os usuários
                 .requestMatchers("/api/auth/**").permitAll()
+                // libera somente GET em /api/comments e GET /api/comments/{poemId}
+                .requestMatchers(HttpMethod.GET, "/api/comments/**").permitAll()
+                // libera somente GET em /api/poems e GET /api/poems/{id}
+                .requestMatchers(HttpMethod.GET, "/api/poems/**").permitAll()
                 // Permite acesso a todos os usuários, mas com autenticação
                 .requestMatchers("/api/poems/**").hasAnyRole("USER", "ADMIN")
                 // Permite acesso a todos os usuários, mas com autenticação

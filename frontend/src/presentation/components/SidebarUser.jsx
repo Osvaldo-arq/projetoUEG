@@ -33,6 +33,11 @@ export default function Sidebar({
           {isMinimized ? <FaBars /> : <FaTimes />}
         </button>
       </div>
+      {/* Botão para retornar à homepage */}
+      <button onClick={goHome} className={styles.logoutButton}>
+        Home
+      </button>
+
       <nav className={styles.nav}>
         {navItems.map(item => (
           <button
@@ -44,10 +49,6 @@ export default function Sidebar({
           </button>
         ))}
       </nav>
-        {/* Botão para retornar à homepage */}
-        <button onClick={goHome} className={styles.logoutButton}>
-          Home
-        </button>
 
         {/* Botão de logout */}
         <button onClick={handleLogout} className={styles.logoutButton}>
